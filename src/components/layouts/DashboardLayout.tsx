@@ -2,32 +2,32 @@
 
 import { useState, useEffect, type PropsWithChildren } from "react";
 import { LeftMenu, LeftSidebar, TopPanel, Navbar } from "@/components/layouts";
-import { useBreakpoint } from "@/hooks";
+import { useSidebarState } from "@/hooks";
 
 type Props = {
     children: React.ReactNode;
 }
 
 export function DashboardLayout({ children }: PropsWithChildren<Props>) {
-    const breakpoint = useBreakpoint();
-    const [minimized, setMinimized] = useState(false);
-    
-    useEffect(() => {
-        if (breakpoint === 'tablet' || breakpoint === 'mobile') {
-            setMinimized(true);
-        } else {
-            setMinimized(false);
-        }
-    }, [breakpoint]);
+    const [minimized, toggleMinimized, hidden] = useSidebarState();
     
     return (
-        <div className="flex min-h-screen">
-            <LeftSidebar minimized={minimized}>
+        <div className="flex min-h-screen drawer">
+            <input id="left-sidebar" type="checkbox" className="drawer-toggle" />
+            <LeftSidebar minimized={minimized} hidden={hidden}>
                 <LeftMenu minimized={minimized} />
             </LeftSidebar>
+
+            <div className="drawer-side">
+                <label htmlFor="left-sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
+                <LeftSidebar minimized={false} hidden={false}>
+                    <LeftMenu minimized={false} />
+                </LeftSidebar>
+            </div>
+
             <main className="flex-1">
                 <TopPanel>
-                    <Navbar minimized={minimized} onToggle={() => setMinimized(!minimized)} />
+                    <Navbar hidden={hidden} minimized={minimized} onToggle={toggleMinimized} />
                 </TopPanel>
                 <div>
                     {children}
