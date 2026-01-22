@@ -17,6 +17,7 @@ export function useSidebarState() : [boolean, () => void, boolean] {
 
      useEffect(() => {
         if (breakpoint === 'tablet' || breakpoint === 'mobile') {
+            // eslint-disable-next-line react-hooks/set-state-in-effect
             setMinimized(true);
         } else if (breakpoint === 'desktop') {
             setMinimized(false);

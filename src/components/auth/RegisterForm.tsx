@@ -1,6 +1,6 @@
 'use client';
 
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 
 export type RegisterFormData = {
     email: string;
@@ -13,7 +13,8 @@ type Props = {
 }
 
 export function RegisterForm({ onSubmit }: Props) {
-    const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormData>();
+    const { register, handleSubmit, formState: { errors }, control } = useForm<RegisterFormData>();
+    const passwordValue = useWatch({ control, name: 'password' });
 
     const onSubmitHandler = (data: RegisterFormData) => {
         onSubmit(data);
@@ -62,7 +63,7 @@ export function RegisterForm({ onSubmit }: Props) {
                         placeholder="confirm password"
                         {...register('confirmPassword', {
                             required: 'Please confirm your password',
-                            validate: (value) => value === watch('password') || 'Passwords do not match'
+                            validate: (value) => value === passwordValue || 'Passwords do not match'
                         })}
                     />
                     {errors.confirmPassword && <span className="text-error text-sm">{errors.confirmPassword.message}</span>}

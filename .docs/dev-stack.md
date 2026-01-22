@@ -6,3 +6,4 @@
 - DaisyUI 5.5.14
 - Lucide React 0.562.0
 - Better-Auth 1.4.17
+- Prisma 7.3.0

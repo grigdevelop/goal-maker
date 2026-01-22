@@ -7,7 +7,9 @@
     "build": "next build",
     "start": "next start",
     "generate": "npx prisma generate",
-    "migrate": "npx prisma migrate dev"
+    "migrate": "npx prisma migrate dev",
+    "lint": "npx lint .",
+    "lint:fix": "npx lint . --fix"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.3.0",
@@ -19,8 +21,7 @@
     "prisma": "^7.3.0",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "react-hook-form": "^7.71.1",
-    "sqlite3": "^5.1.7"
+    "react-hook-form": "^7.71.1"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
@@ -29,8 +30,9 @@
     "@types/react-dom": "^19",
     "daisyui": "^5.5.14",
     "dotenv": "^17.2.3",
+    "eslint": "^9.39.2",
+    "eslint-config-next": "^16.1.4",
     "tailwindcss": "^4",
-    "tsx": "^4.21.0",
     "typescript": "^5"
   }
 }
