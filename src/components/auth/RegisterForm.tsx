@@ -1,19 +1,75 @@
-export function RegisterForm() {
+'use client';
+
+import { useForm } from 'react-hook-form';
+
+export type RegisterFormData = {
+    email: string;
+    password: string;
+    confirmPassword: string;
+};
+
+type Props = {
+    onSubmit: (data: RegisterFormData) => void;
+}
+
+export function RegisterForm({ onSubmit }: Props) {
+    const { register, handleSubmit, formState: { errors }, watch } = useForm<RegisterFormData>();
+
+    const onSubmitHandler = (data: RegisterFormData) => {
+        onSubmit(data);
+    };
+
     return (
         <>
-            <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
-                <legend className="fieldset-legend">Register</legend>
+            <form onSubmit={handleSubmit(onSubmitHandler)}>
+                <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                    <legend className="fieldset-legend">Register</legend>
 
-                <label className="label">Email</label>
-                <input type="email" className="input" placeholder="email" />
+                    <label className="label">Email</label>
+                    <input
+                        type="email"
+                        className="input"
+                        placeholder="email"
+                        {...register('email', {
+                            required: 'Email is required',
+                            pattern: {
+                                value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                                message: 'Invalid email address'
+                            }
+                        })}
+                    />
+                    {errors.email && <span className="text-error text-sm">{errors.email.message}</span>}
 
-                <label className="label">Password</label>
-                <input type="password" className="input" placeholder="password" />
+                    <label className="label">Password</label>
+                    <input
+                        type="password"
+                        className="input"
+                        placeholder="password"
+                        {...register('password', {
+                            required: 'Password is required',
+                            minLength: {
+                                value: 8,
+                                message: 'Password must be at least 8 characters'
+                            }
+                        })}
+                    />
+                    {errors.password && <span className="text-error text-sm">{errors.password.message}</span>}
 
-                <label className="label">Confirm Password</label>
-                <input type="password" className="input" placeholder="confirm password" />
+                    <label className="label">Confirm Password</label>
+                    <input
+                        type="password"
+                        className="input"
+                        placeholder="confirm password"
+                        {...register('confirmPassword', {
+                            required: 'Please confirm your password',
+                            validate: (value) => value === watch('password') || 'Passwords do not match'
+                        })}
+                    />
+                    {errors.confirmPassword && <span className="text-error text-sm">{errors.confirmPassword.message}</span>}
 
-                <button className="btn btn-primary mt-4">Register</button>
-            </fieldset></>
+                    <button type="submit" className="btn btn-primary mt-4">Register</button>
+                </fieldset>
+            </form>
+        </>
     )
 }

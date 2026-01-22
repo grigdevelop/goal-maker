@@ -10,6 +10,8 @@
 - ensure mobile-friendly design  - done
 
 ## Login and register pages - In progress
-- implement register form - in progress
+- implement register form - done
 - implement login form - todo
-  
+- error handling - todo
+- redirect to dashboard - todo
+- protect routes - todo

@@ -6,7 +6,8 @@ CREATE TABLE "user" (
     "emailVerified" BOOLEAN NOT NULL,
     "image" TEXT,
     "createdAt" DATETIME NOT NULL,
-    "updatedAt" DATETIME NOT NULL
+    "updatedAt" DATETIME NOT NULL,
+    "username" TEXT
 );
 
 -- CreateTable
@@ -54,4 +55,13 @@ CREATE TABLE "verification" (
 CREATE UNIQUE INDEX "user_email_key" ON "user"("email");
 
 -- CreateIndex
+CREATE INDEX "session_userId_idx" ON "session"("userId");
+
+-- CreateIndex
 CREATE UNIQUE INDEX "session_token_key" ON "session"("token");
+
+-- CreateIndex
+CREATE INDEX "account_userId_idx" ON "account"("userId");
+
+-- CreateIndex
+CREATE INDEX "verification_identifier_idx" ON "verification"("identifier");
