@@ -1,12 +1,13 @@
 'use client';
 
-import { useState, useEffect, useMemo } from "react";
+import { useState, useEffect } from "react";
 import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 type SidebarState = 'minimized' | 'expanded' | 'hidden';
 
 export function useSidebarState() : [boolean, () => void, boolean] {
     const [minimized, setMinimized] = useState(false);
+    const [hidden, setHidden] = useState(false);
     const breakpoint = useBreakpoint();
 
     const toggleMinimized = () => {
@@ -17,12 +18,12 @@ export function useSidebarState() : [boolean, () => void, boolean] {
      useEffect(() => {
         if (breakpoint === 'tablet' || breakpoint === 'mobile') {
             setMinimized(true);
-        } else {
+        } else if (breakpoint === 'desktop') {
             setMinimized(false);
         }
+        
+        setHidden(breakpoint === 'mobile');
     }, [breakpoint]);
-
-    const hidden = useMemo(() => breakpoint === 'mobile', [breakpoint]);
     
     return [minimized, toggleMinimized, hidden];
 }

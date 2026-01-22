@@ -4,14 +4,8 @@ import { useEffect, useState } from 'react';
 
 export type Breakpoint = 'mobile' | 'tablet' | 'desktop';
 
-export function useBreakpoint(): Breakpoint {
-  const [breakpoint, setBreakpoint] = useState<Breakpoint>(() => {
-    if (typeof window === 'undefined') return 'desktop';
-    const width = window.innerWidth;
-    if (width < 768) return 'mobile';
-    if (width < 1024) return 'tablet';
-    return 'desktop';
-  });
+export function useBreakpoint(): Breakpoint | undefined {
+  const [breakpoint, setBreakpoint] = useState<Breakpoint | undefined>(undefined);
 
   useEffect(() => {
     const mobileQuery = window.matchMedia('(max-width: 767px)');
@@ -26,6 +20,8 @@ export function useBreakpoint(): Breakpoint {
         setBreakpoint('desktop');
       }
     };
+
+    updateBreakpoint();
 
     mobileQuery.addEventListener('change', updateBreakpoint);
     tabletQuery.addEventListener('change', updateBreakpoint);
