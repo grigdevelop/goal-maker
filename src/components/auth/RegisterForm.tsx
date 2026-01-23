@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import { useForm, useWatch } from 'react-hook-form';
 
 export type RegisterFormData = {
@@ -75,6 +76,10 @@ export function RegisterForm({ onSubmit, errorMessage, loading }: Props) {
                     <button type="submit" className="btn btn-primary mt-4" disabled={loading}>
                         {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Register'}
                     </button>
+
+                    <p className="text-center mt-4">
+                        Already have an account? <Link href="/login" className="link link-primary">Login</Link>
+                    </p>
                 </fieldset>
             </form>
         </>
