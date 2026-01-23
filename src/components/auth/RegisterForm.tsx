@@ -10,9 +10,11 @@ export type RegisterFormData = {
 
 type Props = {
     onSubmit: (data: RegisterFormData) => void;
+    errorMessage?: string;
+    loading?: boolean;
 }
 
-export function RegisterForm({ onSubmit }: Props) {
+export function RegisterForm({ onSubmit, errorMessage, loading }: Props) {
     const { register, handleSubmit, formState: { errors }, control } = useForm<RegisterFormData>();
     const passwordValue = useWatch({ control, name: 'password' });
 
@@ -23,8 +25,10 @@ export function RegisterForm({ onSubmit }: Props) {
     return (
         <>
             <form onSubmit={handleSubmit(onSubmitHandler)}>
-                <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4">
+                <fieldset className="fieldset bg-base-200 border-base-300 rounded-box w-xs border p-4" disabled={loading}>
                     <legend className="fieldset-legend">Register</legend>
+
+                    {errorMessage && <div className="alert alert-error mb-4">{errorMessage}</div>}
 
                     <label className="label">Email</label>
                     <input
@@ -68,7 +72,9 @@ export function RegisterForm({ onSubmit }: Props) {
                     />
                     {errors.confirmPassword && <span className="text-error text-sm">{errors.confirmPassword.message}</span>}
 
-                    <button type="submit" className="btn btn-primary mt-4">Register</button>
+                    <button type="submit" className="btn btn-primary mt-4" disabled={loading}>
+                        {loading ? <span className="loading loading-spinner loading-sm"></span> : 'Register'}
+                    </button>
                 </fieldset>
             </form>
         </>

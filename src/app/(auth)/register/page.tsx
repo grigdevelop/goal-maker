@@ -1,27 +1,41 @@
 'use client';
 
+import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { RegisterForm, type RegisterFormData } from "@/components/auth";
 import { signUp } from "@/lib/auth-client";
 
 export default function Register() {
-    const handleSubmit = async (data: RegisterFormData) => {
-        console.log(data);
-        const res = await signUp.email({
-            email: data.email,
-            password: data.password,
-            name: data.email
-        });
+    const router = useRouter();
+    const [loading, setLoading] = useState(false);
+    const [errorMessage, setErrorMessage] = useState('');
 
-        if (res.error) {
-            console.error(res.error);
-        } else {
-            console.log(res.data);
+    const handleSubmit = async (data: RegisterFormData) => {
+        setLoading(true);
+        setErrorMessage('');
+        
+        try {
+            const res = await signUp.email({
+                email: data.email,
+                password: data.password,
+                name: data.email
+            });
+
+            if (res.error) {
+                setErrorMessage(res.error.message || 'Registration failed');
+            } else {
+                router.push('/');
+            }
+        } catch (error) {
+            setErrorMessage('An unexpected error occurred');
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
         <>
-            <RegisterForm onSubmit={handleSubmit} />
+            <RegisterForm onSubmit={handleSubmit} loading={loading} errorMessage={errorMessage} />
         </>
     )
 }
