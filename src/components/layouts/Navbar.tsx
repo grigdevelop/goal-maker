@@ -1,16 +1,15 @@
 import { Menu } from 'lucide-react';
+import { NavbarToggleBtn } from './NavbarToggleBtn';
 
 type Props = {
-    onToggle?: () => void;
+    rootEl: React.RefObject<HTMLDivElement | null>;
 }
 
-export function Navbar({ onToggle }: Props) {
+export function Navbar({ rootEl }: Props) {
     return (
         <div className="navbar bg-base-100 shadow-sm">
             <div className="flex-none">
-                <button className="btn btn-square btn-ghost hidden md:inline-flex" onClick={onToggle}>
-                    <Menu className="h-5 w-5" />
-                </button>
+                <NavbarToggleBtn rootEl={rootEl} />
                 <label htmlFor="left-sidebar" className="btn btn-square btn-ghost inline-flex md:hidden">
                     <Menu className="h-5 w-5" />
                 </label>

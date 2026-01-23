@@ -1,28 +1,24 @@
 import { Target, Lightbulb, CheckSquare } from 'lucide-react';
 
-type Props = {
-  minimized?: boolean;
-};
-
-export function LeftMenu({ minimized = false }: Props) {
+export function LeftMenu() {
   return (
-    <ul className="menu bg-base-200 rounded-box w-full">
+    <ul data-left-nav-class-minimized="[&_span]:hidden" className={`menu bg-base-200 rounded-box w-full`}>
       <li>
         <a>
           <Target className="h-5 w-5" />
-          {!minimized && 'Goals'}
+          <span>Goals</span>
         </a>
       </li>
       <li>
         <a>
           <Lightbulb className="h-5 w-5" />
-          {!minimized && 'Skills'}
+          <span>Skills</span>
         </a>
       </li>
       <li>
         <a>
           <CheckSquare className="h-5 w-5" />
-          {!minimized && 'Tasks'}
+          <span>Tasks</span>
         </a>
       </li>
     </ul>
