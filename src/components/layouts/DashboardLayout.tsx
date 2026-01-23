@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, type PropsWithChildren } from "react";
+import { type PropsWithChildren, Activity } from "react";
 import { LeftMenu, LeftSidebar, TopPanel, Navbar } from "@/components/layouts";
 import { useSidebarState } from "@/hooks";
 
@@ -9,25 +9,25 @@ type Props = {
 }
 
 export function DashboardLayout({ children }: PropsWithChildren<Props>) {
-    const [minimized, toggleMinimized, hidden] = useSidebarState();
+    const [minimized, toggleMinimized] = useSidebarState();
     
     return (
         <div className="flex min-h-screen drawer">
             <input id="left-sidebar" type="checkbox" className="drawer-toggle" />
-            <LeftSidebar minimized={minimized} hidden={hidden}>
+            <LeftSidebar minimized={minimized} className="hidden md:block">
                 <LeftMenu minimized={minimized} />
             </LeftSidebar>
 
             <div className="drawer-side">
                 <label htmlFor="left-sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
-                <LeftSidebar minimized={false} hidden={false}>
+                <LeftSidebar minimized={false}>
                     <LeftMenu minimized={false} />
                 </LeftSidebar>
             </div>
 
             <main className="flex-1">
                 <TopPanel>
-                    <Navbar hidden={hidden} minimized={minimized} onToggle={toggleMinimized} />
+                    <Navbar onToggle={toggleMinimized} />
                 </TopPanel>
                 <div>
                     {children}

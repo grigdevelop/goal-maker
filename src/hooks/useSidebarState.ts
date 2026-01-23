@@ -5,9 +5,8 @@ import { useBreakpoint } from "@/hooks/useBreakpoint";
 
 type SidebarState = 'minimized' | 'expanded' | 'hidden';
 
-export function useSidebarState() : [boolean, () => void, boolean] {
+export function useSidebarState() : [boolean, () => void] {
     const [minimized, setMinimized] = useState(false);
-    const [hidden, setHidden] = useState(false);
     const breakpoint = useBreakpoint();
 
     const toggleMinimized = () => {
@@ -23,8 +22,7 @@ export function useSidebarState() : [boolean, () => void, boolean] {
             setMinimized(false);
         }
         
-        setHidden(breakpoint === 'mobile');
     }, [breakpoint]);
     
-    return [minimized, toggleMinimized, hidden];
+    return [minimized, toggleMinimized];
 }
