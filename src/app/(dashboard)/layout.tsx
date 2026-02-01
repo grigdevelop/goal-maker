@@ -1,5 +1,5 @@
-import { DashboardLayout } from "@/components/layouts";
+import { DashboardLayout, UserMenuServer } from "@/components/layouts";
 
 export default function DashboardLayoutWrapper({ children }: { children: React.ReactNode }) {
-    return <DashboardLayout>{children}</DashboardLayout>;
+    return <DashboardLayout userMenu={<UserMenuServer/>}>{children}</DashboardLayout>;
 }

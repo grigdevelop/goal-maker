@@ -11,7 +11,10 @@
 
 ## Login and register pages - In progress
 - implement register form - done
-- implement login form - todo
-- error handling - todo
+- implement login form - done
 - redirect to dashboard - todo
 - protect routes - todo
+
+## Shared libraries - In progress
+- implement @tanstack/react-query - todo
+- implement error handling with @tanstack/react-query - todo 

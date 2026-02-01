@@ -5,9 +5,10 @@ import { LeftMenu, LeftSidebar, TopPanel, Navbar } from "@/components/layouts";
 
 type Props = {
     children: React.ReactNode;
+    userMenu?: React.ReactNode;
 }
 
-export function DashboardLayout({ children }: PropsWithChildren<Props>) {
+export function DashboardLayout({ children, userMenu }: PropsWithChildren<Props>) {
     const leftMenuRef = useRef<HTMLDivElement>(null);
 
     return (
@@ -26,7 +27,7 @@ export function DashboardLayout({ children }: PropsWithChildren<Props>) {
 
             <main className="flex-1">
                 <TopPanel>
-                    <Navbar rootEl={leftMenuRef}/>
+                    <Navbar rootEl={leftMenuRef} userMenu={userMenu}/>
                 </TopPanel>
                 <div>
                     {children}
