@@ -22,6 +22,7 @@ model User {
   accounts      Account[]
 
   username String?
+  goals    Goal[]
 
   @@unique([email])
   @@map("user")
@@ -39,8 +40,8 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([token])
-  @@map("session")
   @@index([userId])
+  @@map("session")
 }
 
 model Account {
@@ -59,8 +60,8 @@ model Account {
   createdAt             DateTime
   updatedAt             DateTime
 
-  @@map("account")
   @@index([userId])
+  @@map("account")
 }
 
 model Verification {
@@ -71,6 +72,19 @@ model Verification {
   createdAt  DateTime?
   updatedAt  DateTime?
 
-  @@map("verification")
   @@index([identifier])
+  @@map("verification")
+}
+
+model Goal {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("goal")
 }

@@ -1,8 +1,8 @@
 'use client';
 
+import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { NavbarToggleBtn } from './NavbarToggleBtn';
-import { UserMenuServer } from './UserMenuServer';
 
 type Props = {
     rootEl: React.RefObject<HTMLDivElement | null>;
@@ -21,8 +21,8 @@ export function Navbar({ rootEl, userMenu }: Props) {
                 </div>
                 <div className="flex-1">
                     <ul className="menu menu-horizontal px-1">
-                        <li><a>Home</a></li>
-                        <li><a>Contacts</a></li>
+                        <li><Link href="/">Home</Link></li>
+                        <li><Link href="/contacts">Contacts</Link></li>
                     </ul>
                 </div>
             </div>
