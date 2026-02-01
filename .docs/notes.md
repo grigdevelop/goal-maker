@@ -12,8 +12,9 @@
 ## Login and register pages - In progress
 - implement register form - done
 - implement login form - done
-- redirect to dashboard - todo
-- protect routes - todo
+- redirect to dashboard - done
+- protect routes - done
+- show loading on logout - todo
 
 ## Shared libraries - In progress
 - implement @tanstack/react-query - todo
