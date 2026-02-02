@@ -1,44 +1,23 @@
-import { auth } from '@/lib/auth';
-import { headers } from 'next/headers';
-import prisma from '@/lib/prisma';
+import { getGoals, createGoal } from '@/lib/services/goal-service';
+import { withSession } from '@/lib/utils/api/with-session';
 
-export async function GET() {
-    const session = await auth.api.getSession({
-        headers: await headers(),
+export const GET = withSession(async (_, session) => {
+    const goals = await getGoals({
+        userId: session.user.id,
     });
-
-    if (!session) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    const goals = await prisma.goal.findMany({
-        where: {
-          userId: session.user.id,
-        },
-      });
 
     return Response.json({ goals });
-}
+});
 
-export async function POST(request: Request) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
-
-    if (!session) {
-        return Response.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
+export const POST = withSession(async (request, session) => {
     const body = await request.json();
     const { title, description } = body;
 
-    const goal = await prisma.goal.create({
-        data: {
-            title,
-            description,
-            userId: session.user.id,
-        },
+    const goal = await createGoal({
+        userId: session.user.id,
+        title,
+        description,
     });
 
     return Response.json({ goal }, { status: 201 });
-}
+});

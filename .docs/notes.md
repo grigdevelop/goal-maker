@@ -24,3 +24,7 @@
 - implement @tanstack/react-query - todo
 - implement error handling with @tanstack/react-query - todo 
 - duplicate logic of getting user from session in every api route - todo
+
+## API improvements
+- use better error handling with @tanstack/react-query - todo
+- extract shared business logic into service layer to avoid duplication across API routes - todo
