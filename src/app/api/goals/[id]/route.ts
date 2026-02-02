@@ -27,7 +27,7 @@ export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/
             description,
         });
 
-        return Response.json({ goal });
+        return Response.json(goal);
     } catch (error) {
         return Response.json({ error: 'Goal not found' }, { status: 404 });
     }

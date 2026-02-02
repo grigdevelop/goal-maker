@@ -1,7 +1,24 @@
-export default function GoalsPage(){
+import { getGoals } from "@/lib/services/goal-service"
+import { auth } from "@/lib/auth"
+import { headers } from "next/headers"
+import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
+import { Goals } from "@/components/goals"
+
+export default async function GoalsPage() {
+    const session = await auth.api.getSession({
+        headers: await headers()
+    })
+
+    const queryClient = new QueryClient()
+
+    await queryClient.prefetchQuery({
+        queryKey: ['goals'],
+        queryFn: () => getGoals({ userId: session?.user.id })
+    })
+
     return (
-        <div>
-            <h1>Goals</h1>
-        </div>
+        <HydrationBoundary state={dehydrate(queryClient)}>
+            <Goals />
+        </HydrationBoundary>
     )
 }

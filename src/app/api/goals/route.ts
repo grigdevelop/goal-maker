@@ -6,7 +6,7 @@ export const GET = withSession(async (_, session) => {
         userId: session.user.id,
     });
 
-    return Response.json({ goals });
+    return Response.json(goals);
 });
 
 export const POST = withSession(async (request, session) => {
@@ -19,5 +19,5 @@ export const POST = withSession(async (request, session) => {
         description,
     });
 
-    return Response.json({ goal }, { status: 201 });
+    return Response.json(goal, { status: 201 });
 });
