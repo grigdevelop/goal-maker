@@ -15,21 +15,21 @@ export function DashboardLayout({ children, userMenu }: PropsWithChildren<Props>
         <div className="flex min-h-screen drawer" ref={leftMenuRef}>
             <input id="left-sidebar" type="checkbox" className="drawer-toggle" />
             <LeftSidebar className="hidden md:block">
-                <LeftMenu/>
+                <LeftMenu />
             </LeftSidebar>
 
             <div className="drawer-side">
                 <label htmlFor="left-sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
                 <LeftSidebar>
-                    <LeftMenu/>
+                    <LeftMenu />
                 </LeftSidebar>
             </div>
 
             <main className="flex-1">
                 <TopPanel>
-                    <Navbar rootEl={leftMenuRef} userMenu={userMenu}/>
+                    <Navbar rootEl={leftMenuRef} userMenu={userMenu} />
                 </TopPanel>
-                <div>
+                <div className="p-4">
                     {children}
                 </div>
             </main>

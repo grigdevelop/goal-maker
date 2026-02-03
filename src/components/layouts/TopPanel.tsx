@@ -2,7 +2,7 @@ import type { PropsWithChildren } from "react";
 
 export function TopPanel({ children }: PropsWithChildren) {
   return (
-    <div className="sticky top-0">
+    <div className="sticky top-0 z-50">
       {children}
     </div>
   );

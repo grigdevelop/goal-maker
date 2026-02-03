@@ -1,18 +1,16 @@
 'use client';
 
 import { useGoals } from "@/hooks/api/useGoals";
+import { GoalCard } from "./GoalCard";
 
 export function Goals() {
     const { data: goals } = useGoals();
 
     return (
-        <div>
+        <div className="flex flex-wrap">
             <h1>Goals</h1>
             {goals?.map((goal) => (
-                <div key={goal.id}>
-                    <h2>{goal.title}</h2>
-                    <p>{goal.description}</p>
-                </div>
+                <GoalCard key={goal.id} goal={goal} />
             ))}
         </div>
     );
