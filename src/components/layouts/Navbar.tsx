@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { NavbarToggleBtn } from './NavbarToggleBtn';
+import { CreateGoalBtn } from '../goals/CreateGoalBtn';
 
 type Props = {
     rootEl: React.RefObject<HTMLDivElement | null>;
@@ -23,6 +24,7 @@ export function Navbar({ rootEl, userMenu }: Props) {
                     <ul className="menu menu-horizontal px-1">
                         <li><Link href="/">Home</Link></li>
                         <li><Link href="/contacts">Contacts</Link></li>
+                        <CreateGoalBtn />
                     </ul>
                 </div>
             </div>

@@ -1,6 +1,6 @@
 'use client';
 
-import { useGoals } from "@/hooks/api/useGoals";
+import { useGoals } from "@/hooks/api/use-goals";
 import { GoalCard } from "./GoalCard";
 
 export function Goals() {
