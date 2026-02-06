@@ -113,6 +113,7 @@ model Task {
   title       String
   description String?
   type        String        @default("REGULAR")
+  targetCount Int?
   createdAt   DateTime      @default(now())
   updatedAt   DateTime      @default(now())
   userId      String
@@ -128,14 +129,17 @@ model Task {
 }
 
 model TaskHistory {
-  id           Int       @id @default(autoincrement())
-  taskId       Int
-  task         Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
-  status       String    @default("TODO")
-  endTime      DateTime?
-  changedBy    String?
-  changeReason String?
-  createdAt    DateTime  @default(now())
+  id                Int       @id @default(autoincrement())
+  taskId            Int
+  task              Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  status            String    @default("TODO")
+  endTime           DateTime?
+  changedBy         String?
+  changeReason      String?
+  progressIncrement Int?
+  currentCount      Int?
+  note              String?
+  createdAt         DateTime  @default(now())
 
   @@index([taskId, createdAt(sort: Desc)])
   @@index([taskId])

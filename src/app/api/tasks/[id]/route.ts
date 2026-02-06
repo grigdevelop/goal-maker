@@ -4,7 +4,7 @@ import { getTaskWithCurrentState } from '@/lib/services/task-history-service';
 
 export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/tasks/[id]'>) => {
     const body = await request.json();
-    const { title, description, type } = body;
+    const { title, description, type, targetCount } = body;
 
     const taskId = parseInt((await ctx.params).id, 10);
 
@@ -27,6 +27,7 @@ export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/
             title,
             description,
             type,
+            targetCount: targetCount !== undefined ? (targetCount != null ? Number(targetCount) : null) : undefined,
         }, session.user.id);
 
         return Response.json(updated);

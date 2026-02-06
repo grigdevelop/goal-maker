@@ -30,6 +30,7 @@ export const ChangeReason = {
     SCHEDULE_RESET: 'SCHEDULE_RESET',
     DEADLINE_UPDATE: 'DEADLINE_UPDATE',
     TYPE_CHANGE: 'TYPE_CHANGE',
+    PROGRESS_UPDATE: 'PROGRESS_UPDATE',
 } as const;
 
 export type ChangeReason = (typeof ChangeReason)[keyof typeof ChangeReason];

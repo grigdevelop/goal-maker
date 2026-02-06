@@ -7,6 +7,7 @@ export type CreateTaskInput = {
     description?: string | null;
     type?: TaskType;
     endTime?: string | null;
+    targetCount?: number | null;
 };
 
 export type UpdateTaskInput = {
@@ -133,5 +134,23 @@ export function useTaskMutations() {
         },
     });
 
-    return { createMutation, updateMutation, deleteMutation, statusMutation, deadlineMutation, scheduleMutation, deleteScheduleMutation };
+    const progressMutation = useMutation({
+        mutationFn: async ({ id, increment, note }: { id: number; increment: number; note?: string | null }) => {
+            const res = await fetch(`/api/tasks/${id}/progress`, {
+                method: "POST",
+                body: JSON.stringify({ increment, note }),
+            });
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || "Failed to add progress");
+            }
+            return res.json() as Promise<{ currentCount: number; targetCount: number; percentComplete: number; statusChanged: boolean }>;
+        },
+        onSuccess: (_, { id }) => {
+            invalidateTask(id);
+            queryClient.invalidateQueries({ queryKey: ["progress-history", id] });
+        },
+    });
+
+    return { createMutation, updateMutation, deleteMutation, statusMutation, deadlineMutation, scheduleMutation, deleteScheduleMutation, progressMutation };
 }

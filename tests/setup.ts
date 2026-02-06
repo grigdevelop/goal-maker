@@ -20,7 +20,7 @@ beforeAll(async () => {
     // Push schema to test database
     execSync('npx prisma db push', {
         cwd: path.join(__dirname, '..'),
-        env: { ...process.env, DATABASE_URL: TEST_DB_URL },
+        env: { ...process.env, DATABASE_URL: TEST_DB_URL, LOCAL_DATABASE_URL: TEST_DB_URL },
         stdio: 'pipe',
     });
 });

@@ -9,7 +9,7 @@ export const GET = withSession(async (_, session) => {
 
 export const POST = withSession(async (request, session) => {
     const body = await request.json();
-    const { title, description, type, endTime } = body;
+    const { title, description, type, endTime, targetCount } = body;
 
     const task = await createTask({
         userId: session.user.id,
@@ -17,6 +17,7 @@ export const POST = withSession(async (request, session) => {
         description,
         type,
         endTime: endTime ? new Date(endTime) : undefined,
+        targetCount: targetCount != null ? Number(targetCount) : null,
     });
 
     return Response.json(task, { status: 201 });

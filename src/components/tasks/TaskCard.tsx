@@ -63,6 +63,21 @@ export const TaskCard = ({ task }: Props) => {
                 </div>
                 <h2 className="card-title">{task.title}</h2>
                 {task.description && <p className="text-sm opacity-70 line-clamp-2">{task.description}</p>}
+                {task.targetCount != null && task.targetCount > 0 && (
+                    <div className="mt-1">
+                        <div className="flex items-center justify-between text-xs mb-1">
+                            <span className="opacity-60">Progress</span>
+                            <span className="font-mono">{task.currentCount ?? 0}/{task.targetCount}</span>
+                        </div>
+                        <div className="w-full bg-base-300 rounded-full h-2 overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all duration-300 ${(task.currentCount ?? 0) >= task.targetCount ? 'bg-success' : 'bg-primary'
+                                    }`}
+                                style={{ width: `${Math.min(100, Math.round(((task.currentCount ?? 0) / task.targetCount) * 100))}%` }}
+                            ></div>
+                        </div>
+                    </div>
+                )}
                 {deadlineText && (
                     <p className={`text-xs ${isOverdue ? 'text-error' : 'opacity-60'}`}>
                         {deadlineText}

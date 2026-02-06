@@ -38,6 +38,7 @@ export const CreateTaskBtn: React.FC = () => {
                 description: data.description || null,
                 type: data.type,
                 endTime: data.endTime ? new Date(data.endTime).toISOString() : null,
+                targetCount: data.targetCount ? Number(data.targetCount) : null,
             },
             {
                 onSuccess: (createdTask) => {

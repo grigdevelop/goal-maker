@@ -22,6 +22,7 @@ export type TaskFormValues = {
     description: string;
     type: TaskTypeType;
     endTime: string;
+    targetCount: string;
 };
 
 export type TaskFormData = TaskFormValues & {
@@ -41,8 +42,13 @@ export function CreateOrUpdateTaskForm({ task, onSubmit, onClose }: Props) {
             description: task?.description || '',
             type: task?.type || TaskType.REGULAR,
             endTime: task?.endTime || '',
+            targetCount: task?.targetCount || '',
         }
     });
+
+    const [progressEnabled, setProgressEnabled] = useState<boolean>(
+        !!task?.targetCount && task.targetCount !== ''
+    );
 
     const [scheduleData, setScheduleData] = useState<ScheduleFormData>(
         task?.schedule ?? getDefaultScheduleFormData()
@@ -128,6 +134,39 @@ export function CreateOrUpdateTaskForm({ task, onSubmit, onClose }: Props) {
                     />
                 </fieldset>
             )}
+
+            <fieldset className="fieldset">
+                <label className="label cursor-pointer justify-start gap-2">
+                    <input
+                        type="checkbox"
+                        className="checkbox checkbox-sm"
+                        checked={progressEnabled}
+                        onChange={(e) => setProgressEnabled(e.target.checked)}
+                    />
+                    <span>Enable Progress Tracking</span>
+                </label>
+                {progressEnabled && (
+                    <>
+                        <input
+                            type="number"
+                            className="input input-sm w-full mt-1"
+                            placeholder="Target count (e.g., 100 episodes, 50 problems)"
+                            min={1}
+                            {...register('targetCount', {
+                                validate: (val) => {
+                                    if (!progressEnabled) return true;
+                                    const num = Number(val);
+                                    if (!val || isNaN(num) || num < 1 || !Number.isInteger(num)) {
+                                        return 'Target count must be a positive integer';
+                                    }
+                                    return true;
+                                },
+                            })}
+                        />
+                        {errors.targetCount && <span className="text-error text-sm">{errors.targetCount.message}</span>}
+                    </>
+                )}
+            </fieldset>
 
             {/* Schedule config — REPEATABLE: full selector, CUSTOM: dates only */}
             {selectedType === TaskType.REPEATABLE && (

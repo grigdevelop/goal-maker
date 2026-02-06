@@ -45,15 +45,17 @@ export type CreateTaskRequest = {
     description?: string;
     type?: TaskTypeType;
     endTime?: Date | null;
+    targetCount?: number | null;
 };
 
 export async function createTask(options: CreateTaskRequest) {
-    const { endTime, ...taskData } = options;
+    const { endTime, targetCount, ...taskData } = options;
     const task = await prisma.task.create({
         data: {
             title: taskData.title,
             description: taskData.description,
             type: taskData.type ?? TaskType.REGULAR,
+            targetCount: targetCount ?? null,
             userId: taskData.userId,
         },
     });

@@ -160,6 +160,95 @@ export async function recordTypeChange(options: RecordTypeChangeRequest) {
 
 export type RecordTypeChangeResponse = Awaited<ReturnType<typeof recordTypeChange>>;
 
+// Add progress to a task with targetCount
+
+export type AddProgressRequest = {
+    taskId: number;
+    increment: number;
+    note?: string | null;
+    userId: string;
+};
+
+export type AddProgressResponse = {
+    currentCount: number;
+    targetCount: number;
+    percentComplete: number;
+    statusChanged: boolean;
+};
+
+export async function addProgress(options: AddProgressRequest): Promise<AddProgressResponse> {
+    const task = await prisma.task.findUnique({ where: { id: options.taskId } });
+    if (!task) throw new Error(`Task ${options.taskId} not found`);
+    if (!task.targetCount) throw new Error(`Task ${options.taskId} does not have progress tracking enabled`);
+
+    if (options.increment <= 0) throw new Error('Increment must be a positive integer');
+
+    const latest = await getLatestHistory(options.taskId);
+    if (!latest) throw new Error(`No history found for task ${options.taskId}`);
+
+    if (latest.status === TaskStatus.DONE) {
+        throw new Error('Cannot add progress to a completed task');
+    }
+
+    const previousCount = latest.currentCount ?? 0;
+    const newCount = previousCount + options.increment;
+    const reachedTarget = newCount >= task.targetCount;
+
+    // Create progress history entry
+    await prisma.taskHistory.create({
+        data: {
+            taskId: options.taskId,
+            status: reachedTarget ? TaskStatus.DONE : latest.status,
+            endTime: latest.endTime,
+            changedBy: options.userId,
+            changeReason: ChangeReason.PROGRESS_UPDATE,
+            progressIncrement: options.increment,
+            currentCount: newCount,
+            note: options.note ?? null,
+        },
+    });
+
+    // If target reached and status wasn't already DONE, create a status change entry
+    let statusChanged = false;
+    if (reachedTarget && latest.status !== TaskStatus.DONE) {
+        statusChanged = true;
+    }
+
+    return {
+        currentCount: newCount,
+        targetCount: task.targetCount,
+        percentComplete: Math.min(100, Math.round((newCount / task.targetCount) * 100)),
+        statusChanged,
+    };
+}
+
+// Get progress history for a task
+
+export type GetProgressHistoryRequest = {
+    taskId: number;
+    limit?: number;
+};
+
+export async function getProgressHistory(options: GetProgressHistoryRequest) {
+    return prisma.taskHistory.findMany({
+        where: {
+            taskId: options.taskId,
+            changeReason: ChangeReason.PROGRESS_UPDATE,
+        },
+        orderBy: { createdAt: 'desc' },
+        take: options.limit,
+        select: {
+            id: true,
+            progressIncrement: true,
+            currentCount: true,
+            note: true,
+            createdAt: true,
+        },
+    });
+}
+
+export type GetProgressHistoryResponse = Awaited<ReturnType<typeof getProgressHistory>>;
+
 // Get task with current state (latest history merged)
 
 export async function getTaskWithCurrentState(taskId: number) {
@@ -178,6 +267,7 @@ export async function getTaskWithCurrentState(taskId: number) {
         ...task,
         currentStatus: (latest?.status as TaskStatusType) ?? TaskStatus.TODO,
         currentEndTime: latest?.endTime ?? null,
+        currentCount: latest?.currentCount ?? 0,
         lastUpdated: latest?.createdAt ?? task.createdAt,
     };
 }
@@ -199,6 +289,7 @@ export async function getTasksWithCurrentState(userId: string) {
                 ...task,
                 currentStatus: (latest?.status as TaskStatusType) ?? TaskStatus.TODO,
                 currentEndTime: latest?.endTime ?? null,
+                currentCount: latest?.currentCount ?? 0,
                 lastUpdated: latest?.createdAt ?? task.createdAt,
             };
         })

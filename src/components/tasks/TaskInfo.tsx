@@ -1,9 +1,9 @@
 'use client';
 
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import type { TaskWithState } from '@/hooks/api/use-tasks';
-import { useTaskHistory } from '@/hooks/api/use-tasks';
+import { useTaskHistory, useProgressHistory } from '@/hooks/api/use-tasks';
 import { useTaskMutations } from '@/hooks/api/use-task-mutations';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 import { InlineEdit } from '@/components/ui/inline-edit';
@@ -48,14 +48,25 @@ const REASON_LABEL: Record<string, string> = {
     [ChangeReason.SCHEDULE_RESET]: 'Schedule reset',
     [ChangeReason.DEADLINE_UPDATE]: 'Deadline updated',
     [ChangeReason.TYPE_CHANGE]: 'Type changed',
+    [ChangeReason.PROGRESS_UPDATE]: 'Progress updated',
 };
 
 export function TaskInfo({ task }: Props) {
     const router = useRouter();
-    const { updateMutation, deleteMutation, statusMutation, deadlineMutation, scheduleMutation, deleteScheduleMutation } = useTaskMutations();
+    const { updateMutation, deleteMutation, statusMutation, deadlineMutation, scheduleMutation, deleteScheduleMutation, progressMutation } = useTaskMutations();
     const { data: history = [] } = useTaskHistory(task.id, 20);
+    const { data: progressHistory = [] } = useProgressHistory(task.id, 10);
     const [showConfirm, setShowConfirm] = useState(false);
     const { success, error } = useToast();
+
+    // Progress tracking state
+    const progressDialogRef = useRef<HTMLDialogElement>(null);
+    const [progressIncrement, setProgressIncrement] = useState<string>('1');
+    const [progressNote, setProgressNote] = useState<string>('');
+    const hasProgress = task.targetCount != null && task.targetCount > 0;
+    const currentCount = task.currentCount ?? 0;
+    const percentComplete = hasProgress ? Math.min(100, Math.round((currentCount / task.targetCount!) * 100)) : 0;
+    const isCompleted = task.currentStatus === TaskStatus.DONE;
 
     const currentStatus = task.currentStatus as TaskStatusType;
     const nextStatuses = VALID_STATUS_TRANSITIONS[currentStatus] ?? [];
@@ -129,6 +140,27 @@ export function TaskInfo({ task }: Props) {
             { id: task.id, endTime: value ? new Date(value).toISOString() : null },
             {
                 onSuccess: () => success(value ? 'Deadline updated' : 'Deadline removed'),
+                onError: (err) => error(err.message),
+            }
+        );
+    };
+
+    const handleAddProgress = () => {
+        const inc = parseInt(progressIncrement, 10);
+        if (isNaN(inc) || inc <= 0) return;
+        progressMutation.mutate(
+            { id: task.id, increment: inc, note: progressNote.trim() || null },
+            {
+                onSuccess: (result) => {
+                    progressDialogRef.current?.close();
+                    setProgressIncrement('1');
+                    setProgressNote('');
+                    if (result.statusChanged) {
+                        success('Goal reached! Task marked as complete.');
+                    } else {
+                        success(`Progress updated: ${result.currentCount}/${result.targetCount}`);
+                    }
+                },
                 onError: (err) => error(err.message),
             }
         );
@@ -218,6 +250,67 @@ export function TaskInfo({ task }: Props) {
                     </div>
                 </div>
             </div>
+
+            {/* Progress tracking section */}
+            {hasProgress && (
+                <div className="card card-border mt-4">
+                    <div className="card-body p-4">
+                        <div className="flex items-center justify-between mb-2">
+                            <h3 className="font-semibold text-sm">Progress</h3>
+                            <span className="text-sm font-mono">{currentCount} / {task.targetCount}</span>
+                        </div>
+                        <div className="w-full bg-base-300 rounded-full h-4 overflow-hidden">
+                            <div
+                                className={`h-full rounded-full transition-all duration-500 ${percentComplete >= 100 ? 'bg-success' : percentComplete >= 50 ? 'bg-info' : 'bg-primary'
+                                    }`}
+                                style={{ width: `${percentComplete}%` }}
+                            ></div>
+                        </div>
+                        <div className="flex items-center justify-between mt-2">
+                            <span className="text-xs opacity-60">{percentComplete}% complete</span>
+                            {!isCompleted && (
+                                <button
+                                    className="btn btn-primary btn-sm"
+                                    onClick={() => progressDialogRef.current?.showModal()}
+                                    disabled={progressMutation.isPending}
+                                >
+                                    Add Progress
+                                </button>
+                            )}
+                            {isCompleted && percentComplete >= 100 && (
+                                <span className="badge badge-success badge-sm">Goal reached!</span>
+                            )}
+                        </div>
+
+                        {/* Recent progress entries */}
+                        {progressHistory.length > 0 && (
+                            <div className="mt-3 border-t border-base-300 pt-3">
+                                <h4 className="text-xs font-semibold opacity-60 mb-2">Recent Updates</h4>
+                                <div className="space-y-1.5">
+                                    {progressHistory.slice(0, 5).map((entry) => (
+                                        <div key={entry.id} className="flex items-start justify-between text-xs">
+                                            <div className="flex-1">
+                                                <span className="font-mono font-semibold">+{entry.progressIncrement}</span>
+                                                <span className="opacity-50 ml-1">
+                                                    (total: {entry.currentCount})
+                                                </span>
+                                                {entry.note && (
+                                                    <p className="opacity-70 mt-0.5">{entry.note}</p>
+                                                )}
+                                            </div>
+                                            <span className="opacity-40 ml-2 whitespace-nowrap">
+                                                {new Date(entry.createdAt).toLocaleDateString('en-US', {
+                                                    month: 'short', day: 'numeric',
+                                                })}
+                                            </span>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Controls row */}
             <div className={`grid grid-cols-1 ${showDeadline ? 'md:grid-cols-3' : 'md:grid-cols-2'} gap-4 mt-4`}>
@@ -376,6 +469,60 @@ export function TaskInfo({ task }: Props) {
                     </div>
                 </div>
             )}
+
+            {/* Progress update dialog */}
+            <dialog ref={progressDialogRef} className="modal" onClick={(e) => {
+                if (e.target === progressDialogRef.current) progressDialogRef.current?.close();
+            }}>
+                <div className="modal-box">
+                    <h3 className="font-bold text-lg mb-4">Add Progress</h3>
+                    <div className="space-y-3">
+                        <fieldset className="fieldset">
+                            <label className="label">How many did you complete?</label>
+                            <input
+                                type="number"
+                                className="input input-sm input-bordered w-full"
+                                min={1}
+                                value={progressIncrement}
+                                onChange={(e) => setProgressIncrement(e.target.value)}
+                            />
+                        </fieldset>
+                        <fieldset className="fieldset">
+                            <label className="label">Note (optional)</label>
+                            <textarea
+                                className="textarea textarea-sm textarea-bordered w-full"
+                                placeholder="e.g., Watched episodes 45-50"
+                                value={progressNote}
+                                onChange={(e) => setProgressNote(e.target.value)}
+                            />
+                        </fieldset>
+                        {hasProgress && (
+                            <div className="text-sm opacity-70 bg-base-200 rounded-lg p-2">
+                                This will update progress to{' '}
+                                <span className="font-semibold">
+                                    {currentCount + (parseInt(progressIncrement, 10) || 0)}/{task.targetCount}
+                                </span>
+                            </div>
+                        )}
+                        <div className="flex justify-end gap-2 mt-4">
+                            <button
+                                className="btn btn-ghost btn-sm"
+                                onClick={() => progressDialogRef.current?.close()}
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                className="btn btn-primary btn-sm"
+                                onClick={handleAddProgress}
+                                disabled={progressMutation.isPending || !progressIncrement || parseInt(progressIncrement, 10) <= 0}
+                            >
+                                {progressMutation.isPending && <span className="loading loading-spinner loading-xs"></span>}
+                                Add Progress
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </dialog>
 
             <ConfirmDialog
                 open={showConfirm}

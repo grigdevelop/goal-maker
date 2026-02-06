@@ -305,3 +305,146 @@ The form should dynamically show/hide schedule configuration fields based on the
 - Previously configured schedule data is preserved when switching types
 - Clear visual indication of required fields
 - Inline validation errors for invalid schedule configurations
+
+
+
+
+
+
+I would like to add new feature to my task.
+The Idea is to add some number to the task.
+Here is in example of how it should work:
+For example you set the number 100. That's mean that you need to do 100 of something.
+For example you create a task called "Watch 100 episodes of anime" or "Solve Leedcode problems",
+and if the number is set, there should be a counter and button to increase the counter. The click of the button should open the dialog where you enter the number and add note (note is optional). When number is reached, the task should be marked as done.
+I don't know how to name this feature and I don't know how to name the column related to this number in database. Notes could be saved in TaskHistory table.
+
+
+
+
+## Progress Tracking Feature
+
+### Overview
+Add quantifiable progress tracking to tasks, allowing users to track completion of countable objectives (e.g., "Watch 100 episodes", "Solve 50 problems").
+
+### Naming Convention
+- **Feature Name**: Progress Tracking / Quantifiable Goals
+- **Database Column**: `targetCount` (the goal number to reach)
+- **Current Progress**: `currentCount` (tracked in TaskHistory)
+
+### Database Schema Changes
+
+#### Task Model Extension
+```prisma
+model Task {
+  // ... existing fields
+  targetCount Int? // Optional: null for tasks without progress tracking
+}
+```
+
+#### TaskHistory Model Extension
+```prisma
+model TaskHistory {
+  // ... existing fields
+  progressIncrement Int? // Amount added in this update (e.g., +5)
+  currentCount Int? // Running total after this update
+  note String? // Optional note for this progress update
+}
+```
+
+Add new change reason to track progress updates:
+```prisma
+enum ChangeReason {
+  // ... existing reasons
+  PROGRESS_UPDATE
+}
+```
+
+### Business Logic
+
+#### Progress Update Rules
+1. When `targetCount` is set on a task, enable progress tracking UI
+2. Each progress update creates a new TaskHistory entry with:
+   - `changeReason = "PROGRESS_UPDATE"`
+   - `progressIncrement` = amount added (user input)
+   - `currentCount` = previous count + increment
+   - `note` = optional user note
+   - `status` = inherited from latest history (or updated if reaching target)
+3. When `currentCount >= targetCount`:
+   - Auto-update status to DONE
+   - Create additional history entry with `changeReason = "STATUS_CHANGE"`
+
+#### Validation
+- `targetCount` must be positive integer if set
+- `progressIncrement` must be positive integer
+- Cannot add progress if task status is DONE (unless manually reset to TODO/IN_PROGRESS)
+
+### API Design
+
+#### Update Task Progress
+```
+POST /tasks/:id/progress
+Body: {
+  increment: 5,
+  note?: "Watched episodes 45-50"
+}
+Response: {
+  currentCount: 50,
+  targetCount: 100,
+  percentComplete: 50,
+  statusChanged: false
+}
+```
+
+#### Get Progress History
+```
+GET /tasks/:id/progress-history?limit=20
+Response: [
+  {
+    date: "2024-01-15T10:00:00Z",
+    increment: 5,
+    currentCount: 50,
+    note: "Watched episodes 45-50"
+  }
+]
+```
+
+### UI/UX Requirements
+
+#### Task Form (Create/Edit)
+- Add optional "Enable Progress Tracking" toggle
+- When enabled, show numeric input for "Target Count"
+- Label: "Target Count (e.g., 100 episodes, 50 problems)"
+
+#### Task Display
+When `targetCount` is set:
+- Show progress bar: `[████████░░] 50/100 (50%)`
+- Show "Add Progress" button
+- Display recent progress updates below task
+
+#### Progress Update Dialog
+- Numeric input: "How many did you complete?" (default: 1)
+- Optional textarea: "Add note (optional)"
+- Show preview: "This will update progress to X/Y"
+- Buttons: "Cancel" | "Add Progress"
+
+#### Auto-completion Behavior
+When reaching target:
+- Show success message: "🎉 Goal reached! Task marked as complete."
+- Disable further progress updates (until task reset)
+
+### Implementation Checklist
+
+- [ ] Add `targetCount` to Task model
+- [ ] Add `progressIncrement`, `currentCount`, `note` to TaskHistory
+- [ ] Add PROGRESS_UPDATE to ChangeReason enum
+- [ ] Implement progress update service logic
+- [ ] Add auto-completion when target reached
+- [ ] Create POST /tasks/:id/progress endpoint
+- [ ] Create GET /tasks/:id/progress-history endpoint
+- [ ] Build progress tracking UI components
+- [ ] Add progress update dialog
+- [ ] Implement progress bar visualization
+- [ ] Add validation for positive integers
+- [ ] Write tests for progress tracking logic
+- [ ] Document progress tracking API
