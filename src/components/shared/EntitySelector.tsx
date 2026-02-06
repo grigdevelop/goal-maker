@@ -65,7 +65,7 @@ export function EntitySelector({ label, entities, excludeIds, onSelect, onCreate
                 {label}
             </button>
             {isOpen && (
-                <div className="absolute z-50 mt-1 w-64 bg-base-100 border border-base-300 rounded-lg shadow-lg">
+                <div className="absolute z-50 mt-1 right-0 w-64 bg-base-100 border border-base-300 rounded-lg shadow-lg">
                     <div className="p-2">
                         <input
                             type="text"
