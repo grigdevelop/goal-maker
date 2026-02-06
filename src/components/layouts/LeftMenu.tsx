@@ -3,7 +3,7 @@ import Link from 'next/link';
 
 export function LeftMenu() {
   return (
-    <ul data-left-nav-class-minimized="[&_span]:hidden" className={`menu bg-base-200 rounded-box w-full`}>
+    <ul data-left-nav-class-minimized="[&_span]:hidden" className={`menu rounded-box w-full`}>
       <li>
         <Link href="/goals">
           <Target className="h-5 w-5" />

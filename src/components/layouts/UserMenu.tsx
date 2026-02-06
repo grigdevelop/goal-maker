@@ -1,36 +1,44 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useCallback, useEffect, useSyncExternalStore } from 'react';
 import Image from 'next/image';
 import type { User } from 'better-auth';
 import { signOutAction } from '@/lib/actions/auth';
+
+type Theme = 'dark' | 'light';
+
+let listeners: Array<() => void> = [];
+function emitThemeChange() {
+    listeners.forEach((l) => l());
+}
+function subscribeTheme(callback: () => void) {
+    listeners.push(callback);
+    return () => { listeners = listeners.filter((l) => l !== callback); };
+}
+function getThemeSnapshot(): Theme {
+    const val = localStorage.getItem('theme') as Theme | null;
+    return val ?? 'dark';
+}
+function getThemeServerSnapshot(): Theme {
+    return 'dark';
+}
 
 type Props = {
     user: User;
 }
 
 export function UserMenu({ user }: Props) {
-    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
-    const themeRef = useRef(theme);
-
-    useEffect(() => {
-        const saved = localStorage.getItem('theme') as 'dark' | 'light' | null;
-        if (saved && saved !== themeRef.current) {
-            themeRef.current = saved;
-            setTheme(saved);
-        }
-        document.documentElement.setAttribute('data-theme', saved ?? 'dark');
-    }, []);
+    const theme = useSyncExternalStore(subscribeTheme, getThemeSnapshot, getThemeServerSnapshot);
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
     }, [theme]);
 
-    const toggleTheme = () => {
-        const next = theme === 'dark' ? 'light' : 'dark';
-        setTheme(next);
+    const toggleTheme = useCallback(() => {
+        const next: Theme = theme === 'dark' ? 'light' : 'dark';
         localStorage.setItem('theme', next);
-    };
+        emitThemeChange();
+    }, [theme]);
 
     const handleLogout = () => {
         signOutAction();
