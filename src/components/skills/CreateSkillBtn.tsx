@@ -3,6 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { CreateOrUpdateSkillForm } from './CreateOrUpdateSkillForm';
 import { useSkillMutations } from '@/hooks/api/use-skill-mutations';
+import { useToast } from '@/components/ui/toast';
 
 type Skill = {
     title: string;
@@ -14,6 +15,7 @@ export const CreateSkillBtn: React.FC = () => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const { createMutation } = useSkillMutations();
+    const { success, error } = useToast();
 
     const handleClick = () => {
         setIsOpen(true);
@@ -38,7 +40,11 @@ export const CreateSkillBtn: React.FC = () => {
             {
                 onSuccess: () => {
                     handleClose();
-                }
+                    success('Skill created successfully');
+                },
+                onError: () => {
+                    error('Failed to create skill');
+                },
             }
         );
     };

@@ -3,6 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { CreateOrUpdateGoalForm } from './CreateOrUpdateGoalForm';
 import { useGoalMutations } from '@/hooks/api/use-goal-mutations';
+import { useToast } from '@/components/ui/toast';
 
 type Goal = {
     title: string;
@@ -14,6 +15,7 @@ export const CreateGoalBtn: React.FC = () => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const { createMutation } = useGoalMutations();
+    const { success, error } = useToast();
 
     const handleClick = () => {
         setIsOpen(true);
@@ -38,7 +40,11 @@ export const CreateGoalBtn: React.FC = () => {
             {
                 onSuccess: () => {
                     handleClose();
-                }
+                    success('Goal created successfully');
+                },
+                onError: () => {
+                    error('Failed to create goal');
+                },
             }
         );
     };

@@ -22,7 +22,7 @@ export function useGoalMutations() {
     const updateMutation = useMutation({
         mutationFn: async ({ id, data }: { id: string; data: GoalInput }) => {
             const res = await fetch(`/api/goals/${id}`, {
-                method: "PATCH",
+                method: "PUT",
                 body: JSON.stringify(data),
             });
             if (!res.ok) throw new Error("Failed to update goal");

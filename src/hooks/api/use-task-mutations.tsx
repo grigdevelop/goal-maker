@@ -22,7 +22,7 @@ export function useTaskMutations() {
     const updateMutation = useMutation({
         mutationFn: async ({ id, data }: { id: string; data: TaskInput }) => {
             const res = await fetch(`/api/tasks/${id}`, {
-                method: "PATCH",
+                method: "PUT",
                 body: JSON.stringify(data),
             });
             if (!res.ok) throw new Error("Failed to update task");

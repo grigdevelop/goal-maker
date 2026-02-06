@@ -22,7 +22,7 @@ export function useSkillMutations() {
     const updateMutation = useMutation({
         mutationFn: async ({ id, data }: { id: string; data: SkillInput }) => {
             const res = await fetch(`/api/skills/${id}`, {
-                method: "PATCH",
+                method: "PUT",
                 body: JSON.stringify(data),
             });
             if (!res.ok) throw new Error("Failed to update skill");

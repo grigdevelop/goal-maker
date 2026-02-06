@@ -3,6 +3,7 @@
 import React, { useRef, useState } from 'react';
 import { CreateOrUpdateTaskForm } from './CreateOrUpdateTaskForm';
 import { useTaskMutations } from '@/hooks/api/use-task-mutations';
+import { useToast } from '@/components/ui/toast';
 
 type Task = {
     title: string;
@@ -14,6 +15,7 @@ export const CreateTaskBtn: React.FC = () => {
     const dialogRef = useRef<HTMLDialogElement>(null);
     const [isOpen, setIsOpen] = useState(false);
     const { createMutation } = useTaskMutations();
+    const { success, error } = useToast();
 
     const handleClick = () => {
         setIsOpen(true);
@@ -38,7 +40,11 @@ export const CreateTaskBtn: React.FC = () => {
             {
                 onSuccess: () => {
                     handleClose();
-                }
+                    success('Task created successfully');
+                },
+                onError: () => {
+                    error('Failed to create task');
+                },
             }
         );
     };
