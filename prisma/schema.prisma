@@ -79,40 +79,82 @@ model Verification {
 }
 
 model Goal {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalSkills  GoalSkill[]
+  goalTasks   GoalTask[]
 
   @@index([userId])
   @@map("goal")
 }
 
 model Skill {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalSkills  GoalSkill[]
+  skillTasks  SkillTask[]
 
   @@index([userId])
   @@map("skill")
 }
 
 model Task {
-  id          Int      @id @default(autoincrement())
+  id          Int         @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @default(now())
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
   userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  goalTasks   GoalTask[]
+  skillTasks  SkillTask[]
 
   @@index([userId])
   @@map("task")
+}
+
+model GoalSkill {
+  goalId  Int
+  skillId Int
+  goal    Goal  @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+
+  @@id([goalId, skillId])
+  @@index([goalId])
+  @@index([skillId])
+  @@map("goal_skill")
+}
+
+model GoalTask {
+  goalId Int
+  taskId Int
+  goal   Goal @relation(fields: [goalId], references: [id], onDelete: Cascade)
+  task   Task @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@id([goalId, taskId])
+  @@index([goalId])
+  @@index([taskId])
+  @@map("goal_task")
+}
+
+model SkillTask {
+  skillId Int
+  taskId  Int
+  skill   Skill @relation(fields: [skillId], references: [id], onDelete: Cascade)
+  task    Task  @relation(fields: [taskId], references: [id], onDelete: Cascade)
+
+  @@id([skillId, taskId])
+  @@index([skillId])
+  @@index([taskId])
+  @@map("skill_task")
 }

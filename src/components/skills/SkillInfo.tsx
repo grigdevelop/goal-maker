@@ -4,7 +4,11 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GetSkillByIdResponse } from '@/lib/services/skill-service';
 import { useSkillMutations } from '@/hooks/api/use-skill-mutations';
+import { useSkillTasks, useSkillGoals, useSkillRelationMutations } from '@/hooks/api/use-skill-relations';
+import { useTasks } from '@/hooks/api/use-tasks';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { RelationshipManager } from '@/components/shared/RelationshipManager';
+import { EntitySelector } from '@/components/shared/EntitySelector';
 import { InlineEdit } from '@/components/ui/inline-edit';
 import { useToast } from '@/components/ui/toast';
 
@@ -17,6 +21,12 @@ export function SkillInfo({ skill }: Props) {
     const { updateMutation, deleteMutation } = useSkillMutations();
     const [showConfirm, setShowConfirm] = useState(false);
     const { success, error } = useToast();
+
+    const skillId = skill?.id ?? 0;
+    const { data: relatedTasks = [], isLoading: tasksLoading } = useSkillTasks(skillId);
+    const { data: relatedGoals = [], isLoading: goalsLoading } = useSkillGoals(skillId);
+    const { data: allTasks = [] } = useTasks();
+    const { addTask, removeTask } = useSkillRelationMutations(skillId);
 
     const handleDelete = () => {
         if (!skill) return;
@@ -70,6 +80,27 @@ export function SkillInfo({ skill }: Props) {
         });
     }, [skill, updateMutation, success, error]);
 
+    const handleAddTask = (taskId: number) => {
+        addTask.mutate({ taskId }, {
+            onSuccess: () => success('Task added'),
+            onError: () => error('Failed to add task'),
+        });
+    };
+
+    const handleCreateTask = (title: string) => {
+        addTask.mutate({ title }, {
+            onSuccess: () => success('Task created and added'),
+            onError: () => error('Failed to create task'),
+        });
+    };
+
+    const handleRemoveTask = (taskId: number) => {
+        removeTask.mutate(taskId, {
+            onSuccess: () => success('Task removed'),
+            onError: () => error('Failed to remove task'),
+        });
+    };
+
     return (
         <>
             <div className="card card-border">
@@ -104,6 +135,34 @@ export function SkillInfo({ skill }: Props) {
                     </div>
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <RelationshipManager
+                    title="Tasks"
+                    items={relatedTasks}
+                    loading={tasksLoading}
+                    linkPrefix="/tasks"
+                    onRemove={handleRemoveTask}
+                    removeLoading={removeTask.isPending}
+                >
+                    <EntitySelector
+                        label="Add Task"
+                        entities={allTasks}
+                        excludeIds={relatedTasks.map((t) => t.id)}
+                        onSelect={handleAddTask}
+                        onCreate={handleCreateTask}
+                        loading={addTask.isPending}
+                    />
+                </RelationshipManager>
+
+                <RelationshipManager
+                    title="Associated Goals"
+                    items={relatedGoals}
+                    loading={goalsLoading}
+                    linkPrefix="/goals"
+                />
+            </div>
+
             <ConfirmDialog
                 open={showConfirm}
                 title="Delete Skill"

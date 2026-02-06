@@ -4,7 +4,12 @@ import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
 import type { GetGoalByIdResponse } from '@/lib/services/goal-service';
 import { useGoalMutations } from '@/hooks/api/use-goal-mutations';
+import { useGoalSkills, useGoalTasks, useGoalRelationMutations } from '@/hooks/api/use-goal-relations';
+import { useSkills } from '@/hooks/api/use-skills';
+import { useTasks } from '@/hooks/api/use-tasks';
 import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
+import { RelationshipManager } from '@/components/shared/RelationshipManager';
+import { EntitySelector } from '@/components/shared/EntitySelector';
 import { InlineEdit } from '@/components/ui/inline-edit';
 import { useToast } from '@/components/ui/toast';
 
@@ -17,6 +22,13 @@ export function GoalInfo({ goal }: Props) {
     const { updateMutation, deleteMutation } = useGoalMutations();
     const [showConfirm, setShowConfirm] = useState(false);
     const { success, error } = useToast();
+
+    const goalId = goal?.id ?? 0;
+    const { data: relatedSkills = [], isLoading: skillsLoading } = useGoalSkills(goalId);
+    const { data: relatedTasks = [], isLoading: tasksLoading } = useGoalTasks(goalId);
+    const { data: allSkills = [] } = useSkills();
+    const { data: allTasks = [] } = useTasks();
+    const { addSkill, removeSkill, addTask, removeTask } = useGoalRelationMutations(goalId);
 
     const handleDelete = () => {
         if (!goal) return;
@@ -70,6 +82,48 @@ export function GoalInfo({ goal }: Props) {
         });
     }, [goal, updateMutation, success, error]);
 
+    const handleAddSkill = (skillId: number) => {
+        addSkill.mutate({ skillId }, {
+            onSuccess: () => success('Skill added'),
+            onError: () => error('Failed to add skill'),
+        });
+    };
+
+    const handleCreateSkill = (title: string) => {
+        addSkill.mutate({ title }, {
+            onSuccess: () => success('Skill created and added'),
+            onError: () => error('Failed to create skill'),
+        });
+    };
+
+    const handleRemoveSkill = (skillId: number) => {
+        removeSkill.mutate(skillId, {
+            onSuccess: () => success('Skill removed'),
+            onError: () => error('Failed to remove skill'),
+        });
+    };
+
+    const handleAddTask = (taskId: number) => {
+        addTask.mutate({ taskId }, {
+            onSuccess: () => success('Task added'),
+            onError: () => error('Failed to add task'),
+        });
+    };
+
+    const handleCreateTask = (title: string) => {
+        addTask.mutate({ title }, {
+            onSuccess: () => success('Task created and added'),
+            onError: () => error('Failed to create task'),
+        });
+    };
+
+    const handleRemoveTask = (taskId: number) => {
+        removeTask.mutate(taskId, {
+            onSuccess: () => success('Task removed'),
+            onError: () => error('Failed to remove task'),
+        });
+    };
+
     return (
         <>
             <div className="card card-border">
@@ -104,6 +158,45 @@ export function GoalInfo({ goal }: Props) {
                     </div>
                 </div>
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
+                <RelationshipManager
+                    title="Skills"
+                    items={relatedSkills}
+                    loading={skillsLoading}
+                    linkPrefix="/skills"
+                    onRemove={handleRemoveSkill}
+                    removeLoading={removeSkill.isPending}
+                >
+                    <EntitySelector
+                        label="Add Skill"
+                        entities={allSkills}
+                        excludeIds={relatedSkills.map((s) => s.id)}
+                        onSelect={handleAddSkill}
+                        onCreate={handleCreateSkill}
+                        loading={addSkill.isPending}
+                    />
+                </RelationshipManager>
+
+                <RelationshipManager
+                    title="Tasks"
+                    items={relatedTasks}
+                    loading={tasksLoading}
+                    linkPrefix="/tasks"
+                    onRemove={handleRemoveTask}
+                    removeLoading={removeTask.isPending}
+                >
+                    <EntitySelector
+                        label="Add Task"
+                        entities={allTasks}
+                        excludeIds={relatedTasks.map((t) => t.id)}
+                        onSelect={handleAddTask}
+                        onCreate={handleCreateTask}
+                        loading={addTask.isPending}
+                    />
+                </RelationshipManager>
+            </div>
+
             <ConfirmDialog
                 open={showConfirm}
                 title="Delete Goal"
