@@ -1,5 +1,6 @@
 'use client';
 
+import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import type { User } from 'better-auth';
 import { signOutAction } from '@/lib/actions/auth';
@@ -8,8 +9,25 @@ type Props = {
     user: User;
 }
 
+function getInitialTheme(): 'dark' | 'light' {
+    if (typeof window !== 'undefined') {
+        return (localStorage.getItem('theme') as 'dark' | 'light') ?? 'dark';
+    }
+    return 'dark';
+}
 
 export function UserMenu({ user }: Props) {
+    const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
+
+    useEffect(() => {
+        document.documentElement.setAttribute('data-theme', theme);
+    }, [theme]);
+
+    const toggleTheme = () => {
+        const next = theme === 'dark' ? 'light' : 'dark';
+        setTheme(next);
+        localStorage.setItem('theme', next);
+    };
 
     const handleLogout = () => {
         signOutAction();
@@ -37,6 +55,12 @@ export function UserMenu({ user }: Props) {
                         Profile
                         <span className="badge">New</span>
                     </a>
+                </li>
+                <li>
+                    <button onClick={toggleTheme} className="justify-between">
+                        Theme
+                        <span className="badge badge-sm">{theme === 'dark' ? 'Dark' : 'Light'}</span>
+                    </button>
                 </li>
                 <li><a>Settings</a></li>
                 <li><button onClick={handleLogout}>Logout</button></li>
