@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { createTask } from "@/lib/services/task-service";
 
 // Get skills for a goal
 
@@ -63,9 +64,7 @@ export async function addTaskToGoal(goalId: number, taskId: number) {
 // Create new task and add to goal
 
 export async function createTaskForGoal(goalId: number, userId: string, data: { title: string; description?: string | null }) {
-    const task = await prisma.task.create({
-        data: { title: data.title, description: data.description, userId },
-    });
+    const task = await createTask({ title: data.title, description: data.description ?? undefined, userId });
     await prisma.goalTask.create({
         data: { goalId, taskId: task.id },
     });

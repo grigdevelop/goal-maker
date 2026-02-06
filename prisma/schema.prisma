@@ -109,18 +109,51 @@ model Skill {
 }
 
 model Task {
-  id          Int         @id @default(autoincrement())
+  id          Int           @id @default(autoincrement())
   title       String
   description String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  type        String        @default("REGULAR")
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @default(now())
   userId      String
-  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  user        User          @relation(fields: [userId], references: [id], onDelete: Cascade)
   goalTasks   GoalTask[]
   skillTasks  SkillTask[]
+  history     TaskHistory[]
+  schedule    TaskSchedule?
 
   @@index([userId])
+  @@index([type])
   @@map("task")
+}
+
+model TaskHistory {
+  id           Int       @id @default(autoincrement())
+  taskId       Int
+  task         Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  status       String    @default("TODO")
+  endTime      DateTime?
+  changedBy    String?
+  changeReason String?
+  createdAt    DateTime  @default(now())
+
+  @@index([taskId, createdAt(sort: Desc)])
+  @@index([taskId])
+  @@map("task_history")
+}
+
+model TaskSchedule {
+  id              Int       @id @default(autoincrement())
+  taskId          Int       @unique
+  task            Task      @relation(fields: [taskId], references: [id], onDelete: Cascade)
+  scheduleType    String
+  config          String
+  lastEvaluatedAt DateTime?
+  createdAt       DateTime  @default(now())
+  updatedAt       DateTime  @default(now())
+
+  @@index([taskId])
+  @@map("task_schedule")
 }
 
 model GoalSkill {

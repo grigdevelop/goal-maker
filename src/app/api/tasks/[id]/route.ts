@@ -1,9 +1,10 @@
 import { withSession } from '@/lib/utils/api/with-session';
 import { getTaskById, updateTask, deleteTask } from '@/lib/services/task-service';
+import { getTaskWithCurrentState } from '@/lib/services/task-history-service';
 
 export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/tasks/[id]'>) => {
     const body = await request.json();
-    const { title, description } = body;
+    const { title, description, type } = body;
 
     const taskId = parseInt((await ctx.params).id, 10);
 
@@ -22,12 +23,13 @@ export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/
     }
 
     try {
-        const task = await updateTask(taskId, {
+        const updated = await updateTask(taskId, {
             title,
             description,
-        });
+            type,
+        }, session.user.id);
 
-        return Response.json(task);
+        return Response.json(updated);
     } catch (error) {
         return Response.json({ error: 'Task not found' }, { status: 404 });
     }
@@ -65,8 +67,8 @@ export const GET = withSession(async (_, session, ctx: RouteContext<'/api/tasks/
         return Response.json({ error: 'Invalid task ID' }, { status: 400 });
     }
 
-    const task = await getTaskById({ id: taskId, userId: session.user.id });
-    if (!task) {
+    const task = await getTaskWithCurrentState(taskId);
+    if (!task || task.userId !== session.user.id) {
         return Response.json({ error: 'Task not found' }, { status: 404 });
     }
 

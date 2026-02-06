@@ -26,7 +26,9 @@ beforeAll(async () => {
 });
 
 beforeEach(async () => {
-    // Clean tables in correct order (join tables first)
+    // Clean tables in correct order (dependent tables first)
+    await testPrisma.$executeRawUnsafe('DELETE FROM "task_history"');
+    await testPrisma.$executeRawUnsafe('DELETE FROM "task_schedule"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "goal_skill"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "goal_task"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "skill_task"');

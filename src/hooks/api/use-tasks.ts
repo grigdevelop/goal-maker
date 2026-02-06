@@ -1,5 +1,9 @@
 import { useQuery } from '@tanstack/react-query';
-import type { GetTasksResponse, GetTaskByIdResponse } from '@/lib/services/task-service';
+import type { GetTasksWithCurrentStateResponse, GetTaskWithCurrentStateResponse } from '@/lib/services/task-history-service';
+import type { GetHistoryResponse } from '@/lib/services/task-history-service';
+
+export type TaskWithState = NonNullable<GetTaskWithCurrentStateResponse>;
+export type TaskListItem = GetTasksWithCurrentStateResponse[number];
 
 export function useTasks() {
     return useQuery({
@@ -10,7 +14,7 @@ export function useTasks() {
                 throw new Error('Failed to fetch tasks');
             }
             const data = await response.json();
-            return data as GetTasksResponse;
+            return data as GetTasksWithCurrentStateResponse;
         },
     });
 }
@@ -24,8 +28,26 @@ export function useTask(id: number) {
                 throw new Error('Failed to fetch task');
             }
             const data = await response.json();
-            return data as GetTaskByIdResponse;
+            return data as TaskWithState;
         },
         enabled: !!id,
+    });
+}
+
+export function useTaskHistory(taskId: number, limit?: number) {
+    return useQuery({
+        queryKey: ['task-history', taskId, limit],
+        queryFn: async () => {
+            const url = limit
+                ? `/api/tasks/${taskId}/history?limit=${limit}`
+                : `/api/tasks/${taskId}/history`;
+            const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error('Failed to fetch task history');
+            }
+            const data = await response.json();
+            return data as GetHistoryResponse;
+        },
+        enabled: !!taskId,
     });
 }

@@ -1,4 +1,5 @@
 import prisma from "@/lib/prisma";
+import { createTask } from "@/lib/services/task-service";
 
 // Get tasks for a skill
 
@@ -23,9 +24,7 @@ export async function addTaskToSkill(skillId: number, taskId: number) {
 // Create new task and add to skill
 
 export async function createTaskForSkill(skillId: number, userId: string, data: { title: string; description?: string | null }) {
-    const task = await prisma.task.create({
-        data: { title: data.title, description: data.description, userId },
-    });
+    const task = await createTask({ title: data.title, description: data.description ?? undefined, userId });
     await prisma.skillTask.create({
         data: { skillId, taskId: task.id },
     });

@@ -1,4 +1,4 @@
-import { getTaskById } from "@/lib/services/task-service"
+import { getTaskWithCurrentState } from "@/lib/services/task-history-service"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
@@ -24,10 +24,10 @@ export default async function TaskPageRoot(props: PageProps<'/tasks/[id]'>) {
 
     const task = await queryClient.fetchQuery({
         queryKey: ['task', taskId],
-        queryFn: () => getTaskById({ id: taskId, userId: session?.user.id })
+        queryFn: () => getTaskWithCurrentState(taskId)
     })
 
-    if (!task) {
+    if (!task || task.userId !== session?.user.id) {
         notFound()
     }
 

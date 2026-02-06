@@ -1,4 +1,4 @@
-import { getTasks } from "@/lib/services/task-service"
+import { getTasksWithCurrentState } from "@/lib/services/task-history-service"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
@@ -13,7 +13,7 @@ export default async function TasksPageRoot() {
 
     await queryClient.prefetchQuery({
         queryKey: ['tasks'],
-        queryFn: () => getTasks({ userId: session?.user.id })
+        queryFn: () => getTasksWithCurrentState(session?.user.id ?? '')
     })
 
     return (
