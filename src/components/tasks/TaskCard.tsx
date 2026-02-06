@@ -1,6 +1,7 @@
 import Link from 'next/link';
 import type { TaskListItem } from '@/hooks/api/use-tasks';
 import { TaskStatus, TaskType } from '@/lib/constants/task';
+import { EntityCard } from '../shared/EntityCard';
 
 type Props = {
     task: TaskListItem;
@@ -44,7 +45,11 @@ export const TaskCard = ({ task }: Props) => {
     const isOverdue = deadlineText?.startsWith('Overdue');
 
     return (
-        <div className="card card-border w-96">
+        <EntityCard
+            id={task.id}
+            entityType="tasks"
+            aria-label={`Open task: ${task.title}`}
+        >
             <div className="card-body">
                 <div className="flex items-center gap-2 flex-wrap">
                     <span className={`badge badge-sm ${STATUS_BADGE[task.currentStatus] ?? 'badge-ghost'}`}>
@@ -63,12 +68,7 @@ export const TaskCard = ({ task }: Props) => {
                         {deadlineText}
                     </p>
                 )}
-                <div className="card-actions justify-end">
-                    <Link href={`/tasks/${task.id}`} className="btn btn-primary btn-sm">
-                        Open
-                    </Link>
-                </div>
             </div>
-        </div>
+        </EntityCard>
     );
 };
