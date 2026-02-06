@@ -23,6 +23,8 @@ model User {
 
   username String?
   goals    Goal[]
+  skills   Skill[]
+  tasks    Task[]
 
   @@unique([email])
   @@map("user")
@@ -87,4 +89,30 @@ model Goal {
 
   @@index([userId])
   @@map("goal")
+}
+
+model Skill {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("skill")
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @default(now())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([userId])
+  @@map("task")
 }

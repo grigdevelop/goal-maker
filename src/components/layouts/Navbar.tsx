@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { Menu } from 'lucide-react';
 import { NavbarToggleBtn } from './NavbarToggleBtn';
 import { CreateGoalBtn } from '../goals/CreateGoalBtn';
+import { CreateSkillBtn } from '../skills/CreateSkillBtn';
+import { CreateTaskBtn } from '../tasks/CreateTaskBtn';
 
 type Props = {
     rootEl: React.RefObject<HTMLDivElement | null>;
@@ -25,6 +27,8 @@ export function Navbar({ rootEl, userMenu }: Props) {
                         <li><Link href="/">Home</Link></li>
                         <li><Link href="/contacts">Contacts</Link></li>
                         <CreateGoalBtn />
+                        <CreateSkillBtn />
+                        <CreateTaskBtn />
                     </ul>
                 </div>
             </div>
