@@ -40,6 +40,9 @@ export function useSkillRelationMutations(skillId: number) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['skill', skillId, 'tasks'] });
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['skills'] });
+            queryClient.invalidateQueries({ queryKey: ['skill', skillId] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
         },
     });
 
@@ -53,6 +56,9 @@ export function useSkillRelationMutations(skillId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['skill', skillId, 'tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['skills'] });
+            queryClient.invalidateQueries({ queryKey: ['skill', skillId] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
         },
     });
 

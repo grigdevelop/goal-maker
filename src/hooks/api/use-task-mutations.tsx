@@ -25,6 +25,11 @@ export function useTaskMutations() {
         queryClient.invalidateQueries({ queryKey: ["task-history", Number(taskId)] });
     };
 
+    const invalidateRelatedEntities = () => {
+        queryClient.invalidateQueries({ queryKey: ["goals"] });
+        queryClient.invalidateQueries({ queryKey: ["skills"] });
+    };
+
     const createMutation = useMutation({
         mutationFn: async (data: CreateTaskInput) => {
             const res = await fetch("/api/tasks", {
@@ -36,6 +41,7 @@ export function useTaskMutations() {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
+            invalidateRelatedEntities();
         },
     });
 
@@ -50,6 +56,7 @@ export function useTaskMutations() {
         },
         onSuccess: (updatedTask) => {
             invalidateTask(updatedTask.id);
+            invalidateRelatedEntities();
         },
     });
 
@@ -64,6 +71,7 @@ export function useTaskMutations() {
         onSuccess: (_, deletedId) => {
             queryClient.invalidateQueries({ queryKey: ["tasks"] });
             queryClient.removeQueries({ queryKey: ["task", Number(deletedId)] });
+            invalidateRelatedEntities();
         },
     });
 
@@ -81,6 +89,7 @@ export function useTaskMutations() {
         },
         onSuccess: (_, { id }) => {
             invalidateTask(id);
+            invalidateRelatedEntities();
         },
     });
 
@@ -149,6 +158,7 @@ export function useTaskMutations() {
         onSuccess: (_, { id }) => {
             invalidateTask(id);
             queryClient.invalidateQueries({ queryKey: ["progress-history", id] });
+            invalidateRelatedEntities();
         },
     });
 

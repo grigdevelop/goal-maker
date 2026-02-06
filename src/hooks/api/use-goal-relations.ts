@@ -40,6 +40,8 @@ export function useGoalRelationMutations(goalId: number) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['goal', goalId, 'skills'] });
             queryClient.invalidateQueries({ queryKey: ['skills'] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            queryClient.invalidateQueries({ queryKey: ['goal', goalId] });
         },
     });
 
@@ -53,6 +55,8 @@ export function useGoalRelationMutations(goalId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['goal', goalId, 'skills'] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            queryClient.invalidateQueries({ queryKey: ['goal', goalId] });
         },
     });
 
@@ -68,6 +72,8 @@ export function useGoalRelationMutations(goalId: number) {
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['goal', goalId, 'tasks'] });
             queryClient.invalidateQueries({ queryKey: ['tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            queryClient.invalidateQueries({ queryKey: ['goal', goalId] });
         },
     });
 
@@ -81,6 +87,8 @@ export function useGoalRelationMutations(goalId: number) {
         },
         onSuccess: () => {
             queryClient.invalidateQueries({ queryKey: ['goal', goalId, 'tasks'] });
+            queryClient.invalidateQueries({ queryKey: ['goals'] });
+            queryClient.invalidateQueries({ queryKey: ['goal', goalId] });
         },
     });
 
