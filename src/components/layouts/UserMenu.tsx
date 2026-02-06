@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import type { User } from 'better-auth';
 import { signOutAction } from '@/lib/actions/auth';
@@ -9,15 +9,18 @@ type Props = {
     user: User;
 }
 
-function getInitialTheme(): 'dark' | 'light' {
-    if (typeof window !== 'undefined') {
-        return (localStorage.getItem('theme') as 'dark' | 'light') ?? 'dark';
-    }
-    return 'dark';
-}
-
 export function UserMenu({ user }: Props) {
-    const [theme, setTheme] = useState<'dark' | 'light'>(getInitialTheme);
+    const [theme, setTheme] = useState<'dark' | 'light'>('dark');
+    const themeRef = useRef(theme);
+
+    useEffect(() => {
+        const saved = localStorage.getItem('theme') as 'dark' | 'light' | null;
+        if (saved && saved !== themeRef.current) {
+            themeRef.current = saved;
+            setTheme(saved);
+        }
+        document.documentElement.setAttribute('data-theme', saved ?? 'dark');
+    }, []);
 
     useEffect(() => {
         document.documentElement.setAttribute('data-theme', theme);
