@@ -1,17 +1,57 @@
+'use client';
+
+import { useState } from 'react';
+import { useRouter } from 'next/navigation';
 import type { GetGoalByIdResponse } from '@/lib/services/goal-service';
+import { useGoalMutations } from '@/hooks/api/use-goal-mutations';
+import { ConfirmDialog } from '@/components/shared/ConfirmDialog';
 
 type Props = {
     goal: GetGoalByIdResponse;
 }
 
 export function GoalInfo({ goal }: Props) {
+    const router = useRouter();
+    const { deleteMutation } = useGoalMutations();
+    const [showConfirm, setShowConfirm] = useState(false);
+
+    const handleDelete = () => {
+        if (!goal) return;
+        deleteMutation.mutate(String(goal.id), {
+            onSuccess: () => {
+                router.push('/goals');
+            },
+        });
+    };
+
     return (
-        <div className="card card-border">
-            <div className="card-body">
-                <h1 className="card-title text-2xl">{goal?.title}</h1>
-                <p className="text-base">{goal?.description}</p>
+        <>
+            <div className="card card-border">
+                <div className="card-body">
+                    <div className="flex justify-between items-start">
+                        <div>
+                            <h1 className="card-title text-2xl">{goal?.title}</h1>
+                            <p className="text-base mt-2">{goal?.description}</p>
+                        </div>
+                        <button
+                            className="btn btn-error btn-sm"
+                            onClick={() => setShowConfirm(true)}
+                            disabled={deleteMutation.isPending}
+                        >
+                            Delete
+                        </button>
+                    </div>
+                </div>
             </div>
-        </div>
+            <ConfirmDialog
+                open={showConfirm}
+                title="Delete Goal"
+                message={`Are you sure you want to delete "${goal?.title}"? This action cannot be undone.`}
+                loading={deleteMutation.isPending}
+                onConfirm={handleDelete}
+                onCancel={() => setShowConfirm(false)}
+            />
+        </>
     )
 }
 

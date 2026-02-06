@@ -45,7 +45,8 @@ export const CreateGoalBtn: React.FC = () => {
 
     return (
         <>
-            <button onClick={handleClick} className="btn btn-sm">
+            <button onClick={handleClick} className="btn btn-sm" disabled={createMutation.isPending}>
+                {createMutation.isPending && <span className="loading loading-spinner loading-sm"></span>}
                 Create Goal
             </button>
             <dialog ref={dialogRef} className="modal" onClick={handleBackdropClick}>

@@ -3,7 +3,7 @@ import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
 import { Skill } from "@/components/skills"
-import { redirect } from "next/navigation"
+import { notFound } from "next/navigation"
 
 export default async function SkillPageRoot(props: PageProps<'/skills/[id]'>) {
     const session = await auth.api.getSession({
@@ -12,17 +12,24 @@ export default async function SkillPageRoot(props: PageProps<'/skills/[id]'>) {
 
     const id = (await props.params).id
     if (!id) {
-        // TODO: create not found page and redirect to it 
-        return redirect('/skills')
+        notFound()
     }
     const skillId = Number(id)
 
+    if (isNaN(skillId)) {
+        notFound()
+    }
+
     const queryClient = new QueryClient()
 
-    await queryClient.prefetchQuery({
+    const skill = await queryClient.fetchQuery({
         queryKey: ['skill', skillId],
         queryFn: () => getSkillById({ id: skillId, userId: session?.user.id })
     })
+
+    if (!skill) {
+        notFound()
+    }
 
     return (
         <HydrationBoundary state={dehydrate(queryClient)}>
