@@ -4,10 +4,11 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "npm run generate && next build",
+    "build": "npm run generate && npm run push && next build",
     "start": "next start",
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate dev",
+    "push": "npx prisma migrate deploy",
     "lint": "npx lint .",
     "lint:fix": "npx lint . --fix",
     "type-check": "tsc --noEmit",
