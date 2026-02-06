@@ -1,16 +1,11 @@
 'use client';
 
 import { useForm } from "react-hook-form";
-
-type Goal = {
-    id?: number;
-    title: string;
-    description: string | null;
-};
+import type { GoalInput } from "@/schemas/goal.schema";
 
 type Props = {
-    goal?: Goal;
-    onSubmit: (goal: Goal) => void;
+    goal?: GoalInput;
+    onSubmit: (goal: GoalInput) => void;
     onClose: () => void;
 };
 

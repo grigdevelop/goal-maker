@@ -9,7 +9,8 @@
     "generate": "npx prisma generate",
     "migrate": "npx prisma migrate dev",
     "lint": "npx lint .",
-    "lint:fix": "npx lint . --fix"
+    "lint:fix": "npx lint . --fix",
+    "type-check": "tsc --noEmit"
   },
   "dependencies": {
     "@prisma/adapter-better-sqlite3": "^7.3.0",

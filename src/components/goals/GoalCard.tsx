@@ -1,8 +1,7 @@
-type Goal = {
-    id: number;
-    title: string;
-    description: string | null;
-};
+import Link from 'next/link';
+import type { GetGoalsResponse } from '@/lib/services/goal-service';
+
+type Goal = GetGoalsResponse[number];
 
 type Props = {
     goal: Goal;
@@ -15,7 +14,9 @@ export const GoalCard = ({ goal }: Props) => {
                 <h2 className="card-title">{goal.title}</h2>
                 <p>{goal.description}</p>
                 <div className="card-actions justify-end">
-                    <button className="btn btn-primary">Open</button>
+                    <Link href={`/goals/${goal.id}`} className="btn btn-primary">
+                        Open
+                    </Link>
                 </div>
             </div>
         </div>

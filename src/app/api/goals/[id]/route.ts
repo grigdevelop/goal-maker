@@ -57,3 +57,18 @@ export const DELETE = withSession(async (_, session, ctx: RouteContext<'/api/goa
         return Response.json({ error: 'Goal not found' }, { status: 404 });
     }
 });
+
+export const GET = withSession(async (_, session, ctx: RouteContext<'/api/goals/[id]'>) => {
+    const goalId = parseInt((await ctx.params).id, 10);
+
+    if (isNaN(goalId)) {
+        return Response.json({ error: 'Invalid goal ID' }, { status: 400 });
+    }
+
+    const goal = await getGoalById({ id: goalId, userId: session.user.id });
+    if (!goal) {
+        return Response.json({ error: 'Goal not found' }, { status: 404 });
+    }
+
+    return Response.json(goal);
+});

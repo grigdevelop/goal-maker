@@ -4,7 +4,7 @@ import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
 import { Goals } from "@/components/goals"
 
-export default async function GoalsPage() {
+export default async function GoalsPageRoot() {
     const session = await auth.api.getSession({
         headers: await headers()
     })

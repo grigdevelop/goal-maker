@@ -20,12 +20,14 @@ export type GetGoalsResponse = Awaited<ReturnType<typeof getGoals>>;
 
 export type GetGoalByIdRequest = {
     id: number;
+    userId?: string;
 };
 
 export async function getGoalById(options: GetGoalByIdRequest) {
     return prisma.goal.findUnique({
         where: {
             id: options.id,
+            userId: options.userId,
         },
     });
 };
