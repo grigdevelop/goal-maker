@@ -1,4 +1,4 @@
-import { getGoalById } from "@/lib/services/goal-service"
+import { getGoalWithProgress } from "@/lib/services/progress-service"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
@@ -24,7 +24,7 @@ export default async function GoalPageRoot(props: PageProps<'/goals/[id]'>) {
 
     const goal = await queryClient.fetchQuery({
         queryKey: ['goal', goalId],
-        queryFn: () => getGoalById({ id: goalId, userId: session?.user.id })
+        queryFn: () => getGoalWithProgress(goalId)
     })
 
     if (!goal) {

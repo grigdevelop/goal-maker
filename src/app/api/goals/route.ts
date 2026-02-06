@@ -1,11 +1,9 @@
-import { getGoals, createGoal } from '@/lib/services/goal-service';
+import { createGoal } from '@/lib/services/goal-service';
+import { getGoalsWithProgress } from '@/lib/services/progress-service';
 import { withSession } from '@/lib/utils/api/with-session';
 
 export const GET = withSession(async (_, session) => {
-    const goals = await getGoals({
-        userId: session.user.id,
-    });
-
+    const goals = await getGoalsWithProgress(session.user.id);
     return Response.json(goals);
 });
 

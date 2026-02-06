@@ -1,4 +1,4 @@
-import { getSkills } from "@/lib/services/skill-service"
+import { getSkillsWithProgress } from "@/lib/services/progress-service"
 import { auth } from "@/lib/auth"
 import { headers } from "next/headers"
 import { HydrationBoundary, QueryClient, dehydrate } from "@tanstack/react-query"
@@ -13,7 +13,7 @@ export default async function SkillsPageRoot() {
 
     await queryClient.prefetchQuery({
         queryKey: ['skills'],
-        queryFn: () => getSkills({ userId: session?.user.id })
+        queryFn: () => getSkillsWithProgress(session?.user.id ?? '')
     })
 
     return (

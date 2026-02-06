@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { GetGoalByIdResponse } from '@/lib/services/goal-service';
+import type { GoalWithProgress } from '@/lib/services/progress-service';
 import { useGoalMutations } from '@/hooks/api/use-goal-mutations';
 import { useGoalSkills, useGoalTasks, useGoalRelationMutations } from '@/hooks/api/use-goal-relations';
 import { useSkills } from '@/hooks/api/use-skills';
@@ -14,7 +14,7 @@ import { InlineEdit } from '@/components/ui/inline-edit';
 import { useToast } from '@/components/ui/toast';
 
 type Props = {
-    goal: GetGoalByIdResponse;
+    goal: GoalWithProgress;
 }
 
 export function GoalInfo({ goal }: Props) {
@@ -155,6 +155,27 @@ export function GoalInfo({ goal }: Props) {
                         >
                             Delete
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="card card-border mt-4">
+                <div className="card-body p-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-sm">Progress</h3>
+                        <span className="text-sm font-mono">{goal.progress}%</span>
+                    </div>
+                    <div className="w-full bg-base-300 rounded-full h-4 overflow-hidden">
+                        <div
+                            className={`h-full rounded-full transition-all duration-500 ${goal.progress >= 100 ? 'bg-success' : goal.progress >= 50 ? 'bg-info' : 'bg-primary'
+                                }`}
+                            style={{ width: `${goal.progress}%` }}
+                        ></div>
+                    </div>
+                    <div className="flex gap-4 mt-2 text-xs opacity-60">
+                        <span>{goal.taskCount} task{goal.taskCount !== 1 ? 's' : ''}</span>
+                        <span>{goal.skillCount} skill{goal.skillCount !== 1 ? 's' : ''}</span>
                     </div>
                 </div>
             </div>

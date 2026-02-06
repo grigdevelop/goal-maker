@@ -1,5 +1,6 @@
 import { withSession } from '@/lib/utils/api/with-session';
 import { getSkillById, updateSkill, deleteSkill } from '@/lib/services/skill-service';
+import { getSkillWithProgress } from '@/lib/services/progress-service';
 
 export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/skills/[id]'>) => {
     const body = await request.json();
@@ -65,8 +66,8 @@ export const GET = withSession(async (_, session, ctx: RouteContext<'/api/skills
         return Response.json({ error: 'Invalid skill ID' }, { status: 400 });
     }
 
-    const skill = await getSkillById({ id: skillId, userId: session.user.id });
-    if (!skill) {
+    const skill = await getSkillWithProgress(skillId);
+    if (!skill || skill.userId !== session.user.id) {
         return Response.json({ error: 'Skill not found' }, { status: 404 });
     }
 

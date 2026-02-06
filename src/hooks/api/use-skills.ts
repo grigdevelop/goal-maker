@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { GetSkillsResponse, GetSkillByIdResponse } from '@/lib/services/skill-service';
+import type { SkillWithProgress } from '@/lib/services/progress-service';
 
 export function useSkills() {
     return useQuery({
@@ -10,7 +10,7 @@ export function useSkills() {
                 throw new Error('Failed to fetch skills');
             }
             const data = await response.json();
-            return data as GetSkillsResponse;
+            return data as SkillWithProgress[];
         },
     });
 }
@@ -24,7 +24,7 @@ export function useSkill(id: number) {
                 throw new Error('Failed to fetch skill');
             }
             const data = await response.json();
-            return data as GetSkillByIdResponse;
+            return data as SkillWithProgress;
         },
         enabled: !!id,
     });

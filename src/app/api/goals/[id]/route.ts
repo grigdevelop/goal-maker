@@ -1,5 +1,6 @@
 import { withSession } from '@/lib/utils/api/with-session';
 import { getGoalById, updateGoal, deleteGoal } from '@/lib/services/goal-service';
+import { getGoalWithProgress } from '@/lib/services/progress-service';
 
 export const PUT = withSession(async (request, session, ctx: RouteContext<'/api/goals/[id]'>) => {
     const body = await request.json();
@@ -65,8 +66,8 @@ export const GET = withSession(async (_, session, ctx: RouteContext<'/api/goals/
         return Response.json({ error: 'Invalid goal ID' }, { status: 400 });
     }
 
-    const goal = await getGoalById({ id: goalId, userId: session.user.id });
-    if (!goal) {
+    const goal = await getGoalWithProgress(goalId);
+    if (!goal || goal.userId !== session.user.id) {
         return Response.json({ error: 'Goal not found' }, { status: 404 });
     }
 

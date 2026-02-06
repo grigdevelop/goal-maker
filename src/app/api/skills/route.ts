@@ -1,11 +1,9 @@
-import { getSkills, createSkill } from '@/lib/services/skill-service';
+import { createSkill } from '@/lib/services/skill-service';
+import { getSkillsWithProgress } from '@/lib/services/progress-service';
 import { withSession } from '@/lib/utils/api/with-session';
 
 export const GET = withSession(async (_, session) => {
-    const skills = await getSkills({
-        userId: session.user.id,
-    });
-
+    const skills = await getSkillsWithProgress(session.user.id);
     return Response.json(skills);
 });
 

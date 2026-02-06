@@ -2,7 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { useRouter } from 'next/navigation';
-import type { GetSkillByIdResponse } from '@/lib/services/skill-service';
+import type { SkillWithProgress } from '@/lib/services/progress-service';
 import { useSkillMutations } from '@/hooks/api/use-skill-mutations';
 import { useSkillTasks, useSkillGoals, useSkillRelationMutations } from '@/hooks/api/use-skill-relations';
 import { useTasks } from '@/hooks/api/use-tasks';
@@ -13,7 +13,7 @@ import { InlineEdit } from '@/components/ui/inline-edit';
 import { useToast } from '@/components/ui/toast';
 
 type Props = {
-    skill: GetSkillByIdResponse;
+    skill: SkillWithProgress;
 }
 
 export function SkillInfo({ skill }: Props) {
@@ -132,6 +132,26 @@ export function SkillInfo({ skill }: Props) {
                         >
                             Delete
                         </button>
+                    </div>
+                </div>
+            </div>
+
+            {/* Progress bar */}
+            <div className="card card-border mt-4">
+                <div className="card-body p-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <h3 className="font-semibold text-sm">Progress</h3>
+                        <span className="text-sm font-mono">{skill.progress}%</span>
+                    </div>
+                    <div className="w-full bg-base-300 rounded-full h-4 overflow-hidden">
+                        <div
+                            className={`h-full rounded-full transition-all duration-500 ${skill.progress >= 100 ? 'bg-success' : skill.progress >= 50 ? 'bg-info' : 'bg-primary'
+                                }`}
+                            style={{ width: `${skill.progress}%` }}
+                        ></div>
+                    </div>
+                    <div className="mt-2 text-xs opacity-60">
+                        <span>{skill.taskCount} task{skill.taskCount !== 1 ? 's' : ''}</span>
                     </div>
                 </div>
             </div>

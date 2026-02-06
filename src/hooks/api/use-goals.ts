@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query';
-import type { GetGoalsResponse, GetGoalByIdResponse } from '@/lib/services/goal-service';
+import type { GoalWithProgress } from '@/lib/services/progress-service';
 
 export function useGoals() {
     return useQuery({
@@ -10,7 +10,7 @@ export function useGoals() {
                 throw new Error('Failed to fetch goals');
             }
             const data = await response.json();
-            return data as GetGoalsResponse;
+            return data as GoalWithProgress[];
         },
     });
 }
@@ -24,7 +24,7 @@ export function useGoal(id: number) {
                 throw new Error('Failed to fetch goal');
             }
             const data = await response.json();
-            return data as GetGoalByIdResponse;
+            return data as GoalWithProgress;
         },
         enabled: !!id,
     });
