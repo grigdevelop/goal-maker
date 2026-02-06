@@ -18,7 +18,7 @@ export function DashboardLayout({ children, userMenu }: PropsWithChildren<Props>
                 <LeftMenu />
             </LeftSidebar>
 
-            <div className="drawer-side">
+            <div className="drawer-side z-100">
                 <label htmlFor="left-sidebar" aria-label="close sidebar" className="drawer-overlay"></label>
                 <LeftSidebar>
                     <LeftMenu />
