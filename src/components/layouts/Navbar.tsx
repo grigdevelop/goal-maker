@@ -14,27 +14,29 @@ type Props = {
 
 export function Navbar({ rootEl, userMenu }: Props) {
     return (
-        <div className="navbar bg-base-100 shadow-sm">
-            <div className='navbar-start'>
-                <div className="flex-none">
-                    <NavbarToggleBtn rootEl={rootEl} />
-                    <label htmlFor="left-sidebar" className="btn btn-square btn-ghost inline-flex md:hidden">
-                        <Menu className="h-5 w-5" />
-                    </label>
+        <>
+            <div className="navbar bg-base-100 shadow-[0_6px_12px_4px_rgba(255,255,255,0.8)] relative z-10">
+                <div className='navbar-start'>
+                    <div className="flex-none">
+                        <NavbarToggleBtn rootEl={rootEl} />
+                        <label htmlFor="left-sidebar" className="btn btn-square btn-ghost inline-flex md:hidden">
+                            <Menu className="h-5 w-5" />
+                        </label>
+                    </div>
+                    <div className="flex-1">
+                        <ul className="menu menu-horizontal px-1">
+                            <li><Link href="/">Home</Link></li>
+                            <li><Link href="/contacts">Contacts</Link></li>
+                            <CreateGoalBtn />
+                            <CreateSkillBtn />
+                            <CreateTaskBtn />
+                        </ul>
+                    </div>
                 </div>
-                <div className="flex-1">
-                    <ul className="menu menu-horizontal px-1">
-                        <li><Link href="/">Home</Link></li>
-                        <li><Link href="/contacts">Contacts</Link></li>
-                        <CreateGoalBtn />
-                        <CreateSkillBtn />
-                        <CreateTaskBtn />
-                    </ul>
+                <div className='navbar-end'>
+                    {userMenu}
                 </div>
             </div>
-            <div className='navbar-end'>
-                {userMenu}
-            </div>
-        </div>
+        </>
     );
 }
