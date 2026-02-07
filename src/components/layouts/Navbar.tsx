@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { Menu } from 'lucide-react';
+import { Menu, Plus } from 'lucide-react';
 import { NavbarToggleBtn } from './NavbarToggleBtn';
 import { CreateGoalBtn } from '../goals/CreateGoalBtn';
 import { CreateSkillBtn } from '../skills/CreateSkillBtn';
@@ -26,12 +26,18 @@ export function Navbar({ rootEl, userMenu }: Props) {
                     <div className="flex-1">
                         <ul className="menu menu-horizontal px-1">
                             <li><Link href="/">Home</Link></li>
-                            <li><Link href="/contacts">Contacts</Link></li>
-                            <div className="hidden md:inline-flex">
-                                <CreateGoalBtn />
-                                <CreateSkillBtn />
-                                <CreateTaskBtn />
-                            </div>
+                            <li>
+                                <div className="dropdown dropdown-center">
+                                    <div tabIndex={0} role="button">
+                                        <Plus />
+                                    </div>
+                                    <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 w-52 p-2 shadow">
+                                        <li><CreateGoalBtn /></li>
+                                        <li><CreateSkillBtn /></li>
+                                        <li><CreateTaskBtn /></li>
+                                    </ul>
+                                </div>
+                            </li>
                         </ul>
                     </div>
                 </div>
