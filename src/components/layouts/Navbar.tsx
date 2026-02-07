@@ -15,7 +15,7 @@ type Props = {
 export function Navbar({ rootEl, userMenu }: Props) {
     return (
         <>
-            <div className="navbar bg-base-100 shadow-[0_6px_12px_4px_rgba(255,255,255,0.8)] relative z-10">
+            <div className="navbar bg-base-100 shadow-[0_6px_12px_4px_rgba(255,255,255,0.8)] dark:shadow-none relative z-10">
                 <div className='navbar-start'>
                     <div className="flex-none">
                         <NavbarToggleBtn rootEl={rootEl} />
@@ -27,9 +27,11 @@ export function Navbar({ rootEl, userMenu }: Props) {
                         <ul className="menu menu-horizontal px-1">
                             <li><Link href="/">Home</Link></li>
                             <li><Link href="/contacts">Contacts</Link></li>
-                            <CreateGoalBtn />
-                            <CreateSkillBtn />
-                            <CreateTaskBtn />
+                            <div className="hidden md:inline-flex">
+                                <CreateGoalBtn />
+                                <CreateSkillBtn />
+                                <CreateTaskBtn />
+                            </div>
                         </ul>
                     </div>
                 </div>
