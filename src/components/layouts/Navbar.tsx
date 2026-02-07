@@ -36,6 +36,7 @@ export function Navbar({ rootEl, userMenu }: Props) {
                 <div className='navbar-end'>
                     {userMenu}
                 </div>
+                <div className="w-full h-[2px] bg-base-300 z-100 absolute bottom-0"></div>
             </div>
         </>
     );
