@@ -63,7 +63,7 @@ export const CreateTaskBtn: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} className="btn btn-sm" disabled={createMutation.isPending || scheduleMutation.isPending}>
+        <button onClick={handleClick} disabled={createMutation.isPending || scheduleMutation.isPending}>
             {(createMutation.isPending || scheduleMutation.isPending) && <span className="loading loading-spinner loading-sm"></span>}
             Create Task
         </button>

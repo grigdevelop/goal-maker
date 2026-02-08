@@ -15,7 +15,8 @@ type Props = {
 export function Navbar({ rootEl, userMenu }: Props) {
     return (
         <>
-            <div className="navbar bg-base-100 shadow-[0_6px_12px_4px_rgba(255,255,255,0.8)] dark:shadow-none relative z-10">
+            {/* <div className="navbar bg-base-100 shadow-[0_6px_12px_4px_rgba(255,255,255,0.8)] dark:shadow-none relative z-10 ">  */}
+            <div className="navbar bg-base-100 relative z-10 ">
                 <div className='navbar-start'>
                     <div className="flex-none">
                         <NavbarToggleBtn rootEl={rootEl} />
@@ -26,25 +27,22 @@ export function Navbar({ rootEl, userMenu }: Props) {
                     <div className="flex-1">
                         <ul className="menu menu-horizontal px-1">
                             <li><Link href="/">Home</Link></li>
-                            <li>
-                                <div className="dropdown dropdown-center">
-                                    <div tabIndex={0} role="button">
-                                        <Plus />
-                                    </div>
-                                    <ul className="menu menu-sm dropdown-content bg-base-100 rounded-box mt-3 w-52 p-2 shadow">
-                                        <li><CreateGoalBtn /></li>
-                                        <li><CreateSkillBtn /></li>
-                                        <li><CreateTaskBtn /></li>
-                                    </ul>
-                                </div>
-                            </li>
                         </ul>
+                        <div className="dropdown dropdown-center">
+                            <div tabIndex={0} role="button" className="btn btn-ghost btn-circle">
+                                <Plus />
+                            </div>
+                            <ul tabIndex={-1} className="menu menu-sm dropdown-content bg-base-100 rounded-box w-26 mt-3 p-2 shadow">
+                                <li><CreateGoalBtn /></li>
+                                <li><CreateSkillBtn /></li>
+                                <li><CreateTaskBtn /></li>
+                            </ul>
+                        </div>
                     </div>
                 </div>
                 <div className='navbar-end'>
                     {userMenu}
                 </div>
-                <div className="w-full h-[2px] bg-base-300 z-100 absolute bottom-0"></div>
             </div>
         </>
     );

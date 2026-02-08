@@ -38,7 +38,7 @@ export const CreateGoalBtn: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} className="btn btn-sm" disabled={createMutation.isPending}>
+        <button onClick={handleClick} disabled={createMutation.isPending}>
             {createMutation.isPending && <span className="loading loading-spinner loading-sm"></span>}
             Create Goal
         </button>
