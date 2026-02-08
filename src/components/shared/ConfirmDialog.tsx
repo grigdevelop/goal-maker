@@ -46,14 +46,14 @@ export function ConfirmDialog({
                 <p className="py-4">{message}</p>
                 <div className="modal-action">
                     <button
-                        className="btn btn-ghost"
+                        className="btn btn-sm btn-ghost"
                         onClick={onCancel}
                         disabled={loading}
                     >
                         {cancelLabel}
                     </button>
                     <button
-                        className="btn btn-error"
+                        className="btn btn-sm btn-error"
                         onClick={onConfirm}
                         disabled={loading}
                     >

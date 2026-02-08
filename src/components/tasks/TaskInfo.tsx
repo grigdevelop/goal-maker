@@ -18,6 +18,7 @@ import {
     validateScheduleFormData,
 } from './ScheduleConfigFields';
 import type { ScheduleFormData } from './ScheduleConfigFields';
+import { Trash } from 'lucide-react';
 
 type Props = {
     task: TaskWithState;
@@ -245,7 +246,7 @@ export function TaskInfo({ task }: Props) {
                             onClick={() => setShowConfirm(true)}
                             disabled={deleteMutation.isPending}
                         >
-                            Delete
+                            <Trash className="w-4 h-4" />
                         </button>
                     </div>
                 </div>

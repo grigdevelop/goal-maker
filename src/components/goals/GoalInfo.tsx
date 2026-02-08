@@ -12,6 +12,7 @@ import { RelationshipManager } from '@/components/shared/RelationshipManager';
 import { EntitySelector } from '@/components/shared/EntitySelector';
 import { InlineEdit } from '@/components/ui/inline-edit';
 import { useToast } from '@/components/ui/toast';
+import { Trash } from 'lucide-react';
 
 type Props = {
     goal: GoalWithProgress;
@@ -153,7 +154,7 @@ export function GoalInfo({ goal }: Props) {
                             onClick={() => setShowConfirm(true)}
                             disabled={deleteMutation.isPending}
                         >
-                            Delete
+                            <Trash className="w-4 h-4" />
                         </button>
                     </div>
                 </div>
