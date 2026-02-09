@@ -11,7 +11,11 @@ type Goal = {
     description: string | null;
 };
 
-export const CreateGoalBtn: React.FC = () => {
+type Props = {
+    className?: string;
+};
+
+export const CreateGoalBtn: React.FC<Props> = ({ className }) => {
     const { openDialog, closeDialog } = useDialog();
     const { createMutation } = useGoalMutations();
     const { success, error } = useToast();
@@ -38,7 +42,7 @@ export const CreateGoalBtn: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} disabled={createMutation.isPending}>
+        <button className={className} onClick={handleClick} disabled={createMutation.isPending}>
             {createMutation.isPending && <span className="loading loading-spinner loading-sm"></span>}
             Create Goal
         </button>

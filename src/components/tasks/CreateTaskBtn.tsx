@@ -9,7 +9,11 @@ import { useToast } from '@/components/ui/toast';
 import { useDialog } from '@/components/shared/dialog';
 import type { ScheduleType } from '@/lib/constants/task';
 
-export const CreateTaskBtn: React.FC = () => {
+type Props = {
+    className?: string;
+};
+
+export const CreateTaskBtn: React.FC<Props> = ({ className }) => {
     const { openDialog, closeDialog } = useDialog();
     const { createMutation, scheduleMutation } = useTaskMutations();
     const { success, error } = useToast();
@@ -63,7 +67,7 @@ export const CreateTaskBtn: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} disabled={createMutation.isPending || scheduleMutation.isPending}>
+        <button className={className} onClick={handleClick} disabled={createMutation.isPending || scheduleMutation.isPending}>
             {(createMutation.isPending || scheduleMutation.isPending) && <span className="loading loading-spinner loading-sm"></span>}
             Create Task
         </button>

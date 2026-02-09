@@ -11,7 +11,11 @@ type Skill = {
     description: string | null;
 };
 
-export const CreateSkillBtn: React.FC = () => {
+type Props = {
+    className?: string;
+};
+
+export const CreateSkillBtn: React.FC<Props> = ({ className }) => {
     const { openDialog, closeDialog } = useDialog();
     const { createMutation } = useSkillMutations();
     const { success, error } = useToast();
@@ -38,7 +42,7 @@ export const CreateSkillBtn: React.FC = () => {
     };
 
     return (
-        <button onClick={handleClick} disabled={createMutation.isPending}>
+        <button className={className} onClick={handleClick} disabled={createMutation.isPending}>
             {createMutation.isPending && <span className="loading loading-spinner loading-sm"></span>}
             Create Skill
         </button>
