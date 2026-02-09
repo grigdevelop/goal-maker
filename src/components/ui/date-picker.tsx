@@ -57,7 +57,9 @@ export function DatePicker({
     const handleSelect = useCallback((date: Date | undefined) => {
         if (!date) return;
         onChange(formatDate(date));
-        popoverRef.current?.hidePopover();
+        if (typeof popoverRef.current?.hidePopover === 'function') {
+            popoverRef.current.hidePopover();
+        }
     }, [onChange]);
 
     const sizeClass = size === 'sm' ? 'input-sm' : size === 'lg' ? 'input-lg' : '';
@@ -70,8 +72,11 @@ export function DatePicker({
                 className={`input input-border ${sizeClass} flex items-center gap-2 cursor-pointer w-full text-left ${className}`}
                 style={{ anchorName } as React.CSSProperties}
                 disabled={disabled}
+                aria-haspopup="dialog"
+                aria-expanded={false}
+                aria-label={selectedDate ? `Selected date: ${formatDisplay(selectedDate)}` : placeholder}
             >
-                <Calendar className="h-4 w-4 opacity-50 shrink-0" />
+                <Calendar className="h-4 w-4 opacity-50 shrink-0" aria-hidden="true" />
                 <span className={selectedDate ? '' : 'opacity-50'}>
                     {selectedDate ? formatDisplay(selectedDate) : placeholder}
                 </span>
@@ -82,11 +87,14 @@ export function DatePicker({
                 id={popoverId}
                 className="dropdown"
                 style={{ positionAnchor: anchorName } as React.CSSProperties}
+                role="dialog"
+                aria-label="Date picker"
             >
                 <DayPicker
                     key={value ?? 'empty'}
                     className="react-day-picker"
                     mode="single"
+                    fixedWeeks
                     selected={selectedDate}
                     onSelect={handleSelect}
                     defaultMonth={selectedDate ?? new Date()}
