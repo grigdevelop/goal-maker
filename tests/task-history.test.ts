@@ -148,6 +148,16 @@ describe('Task History Service', () => {
             ).rejects.toThrow('Invalid status transition: TODO → TODO');
         });
 
+        it('should reject when changing status to DONE while targetCount not reached', async () => {
+            const task = await createTask({ userId, title: 'Task', targetCount: 10 });
+            await changeStatus({ taskId: task.id, newStatus: TaskStatus.IN_PROGRESS, userId });
+
+            await expect(
+                changeStatus({ taskId: task.id, newStatus: TaskStatus.DONE, userId })
+            ).rejects.toThrow();
+        });
+
+
         it('should inherit endTime from previous history on status change', async () => {
             const deadline = new Date('2025-06-15');
             const task = await createTask({ userId, title: 'Task', endTime: deadline });

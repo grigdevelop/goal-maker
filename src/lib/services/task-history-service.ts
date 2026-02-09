@@ -80,6 +80,19 @@ export async function changeStatus(options: ChangeStatusRequest) {
         );
     }
 
+    // Check if trying to mark as DONE when targetCount is not reached
+    if (options.newStatus === TaskStatus.DONE) {
+        const task = await prisma.task.findUnique({ where: { id: options.taskId } });
+        if (task?.targetCount) {
+            const currentCount = latest.currentCount ?? 0;
+            if (currentCount < task.targetCount) {
+                throw new Error(
+                    `Cannot mark as DONE: progress ${currentCount}/${task.targetCount} not complete`
+                );
+            }
+        }
+    }
+
     return prisma.taskHistory.create({
         data: {
             taskId: options.taskId,

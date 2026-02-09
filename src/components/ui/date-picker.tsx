@@ -1,6 +1,6 @@
 'use client';
 
-import { useCallback, useId, useRef } from 'react';
+import { useCallback, useId, useRef, useEffect, useState } from 'react';
 import { DayPicker } from 'react-day-picker';
 import { Calendar } from 'lucide-react';
 
@@ -36,6 +36,11 @@ function formatDisplay(date: Date): string {
     });
 }
 
+function useCurrentDate() {
+    const [date] = useState<Date>(() => new Date());
+    return date;
+}
+
 export function DatePicker({
     value,
     onChange,
@@ -49,6 +54,7 @@ export function DatePicker({
     const popoverId = useId();
     const anchorName = `--datepicker-${popoverId.replace(/:/g, '')}`;
     const popoverRef = useRef<HTMLDivElement>(null);
+    const currentDate = useCurrentDate();
 
     const selectedDate = parseDate(value);
     const minDate = parseDate(min);
@@ -97,12 +103,12 @@ export function DatePicker({
                     fixedWeeks
                     selected={selectedDate}
                     onSelect={handleSelect}
-                    defaultMonth={selectedDate ?? new Date()}
+                    defaultMonth={selectedDate ?? currentDate}
                     disabled={[
                         ...(minDate ? [{ before: minDate }] : []),
                         ...(maxDate ? [{ after: maxDate }] : []),
                     ]}
-                    today={new Date()}
+                    today={currentDate}
                 />
             </div>
         </>

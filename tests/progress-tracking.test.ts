@@ -139,8 +139,12 @@ describe('Progress Tracking', () => {
         it('should throw error when adding progress to DONE task', async () => {
             const task = await createTask({ userId, title: 'Task', targetCount: 10 });
 
-            await changeStatus({ taskId: task.id, newStatus: TaskStatus.IN_PROGRESS, userId });
-            await changeStatus({ taskId: task.id, newStatus: TaskStatus.DONE, userId });
+            // make task DONE
+            await addProgress({ taskId: task.id, increment: 10, userId });
+
+            // check if task is DONE
+            const latest = await getLatestHistory(task.id);
+            expect(latest!.status).toBe(TaskStatus.DONE);
 
             await expect(
                 addProgress({ taskId: task.id, increment: 1, userId })
