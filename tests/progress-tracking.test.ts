@@ -54,7 +54,7 @@ describe('Progress Tracking', () => {
             expect(result.currentCount).toBe(5);
             expect(result.targetCount).toBe(50);
             expect(result.percentComplete).toBe(10);
-            expect(result.statusChanged).toBe(false);
+            expect(result.statusChanged).toBe(true); // should change status to IN_PROGRESS
         });
 
         it('should accumulate progress across multiple updates', async () => {
@@ -106,18 +106,6 @@ describe('Progress Tracking', () => {
             expect(latest!.status).toBe(TaskStatus.DONE);
         });
 
-        it('should auto-complete when exceeding target', async () => {
-            const task = await createTask({ userId, title: 'Do 3 things', targetCount: 3 });
-
-            await changeStatus({ taskId: task.id, newStatus: TaskStatus.IN_PROGRESS, userId });
-
-            const result = await addProgress({ taskId: task.id, increment: 5, userId });
-
-            expect(result.currentCount).toBe(5);
-            expect(result.percentComplete).toBe(100);
-            expect(result.statusChanged).toBe(true);
-        });
-
         it('should throw error for task without targetCount', async () => {
             const task = await createTask({ userId, title: 'Regular task' });
 
@@ -167,6 +155,25 @@ describe('Progress Tracking', () => {
             const latest = await getLatestHistory(task.id);
             expect(latest!.changeReason).toBe(ChangeReason.PROGRESS_UPDATE);
         });
+
+        it('should reject with error when increment exceeds remaining', async () => {
+            const task = await createTask({ userId, title: 'Task', targetCount: 10 });
+
+            await expect(
+                addProgress({ taskId: task.id, increment: 15, userId })
+            ).rejects.toThrow('exceeds remaining');
+        });
+
+        it('should change status to IN_PROGRESS when adding progress to TODO task', async () => {
+            const task = await createTask({ userId, title: 'Task', targetCount: 10 });
+
+            const result = await addProgress({ taskId: task.id, increment: 2, userId });
+
+            const latest = await getLatestHistory(task.id);
+            expect(latest!.status).toBe(TaskStatus.IN_PROGRESS);
+            expect(result.statusChanged).toBe(true);
+        });
+
     });
 
     // ── GET PROGRESS HISTORY ─────────────────────────────────

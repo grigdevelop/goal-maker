@@ -191,14 +191,30 @@ export async function addProgress(options: AddProgressRequest): Promise<AddProgr
     }
 
     const previousCount = latest.currentCount ?? 0;
+    const remaining = task.targetCount - previousCount;
+
+    if (options.increment > remaining) {
+        throw new Error(`Increment ${options.increment} exceeds remaining ${remaining}`);
+    }
+
     const newCount = previousCount + options.increment;
     const reachedTarget = newCount >= task.targetCount;
+
+    // should change status to IN_PROGRESS when adding progress to TODO task
+    let newStatus = latest.status;
+    if (latest.status === TaskStatus.TODO && options.increment > 0) {
+        newStatus = TaskStatus.IN_PROGRESS;
+    }
+
+    if (reachedTarget) {
+        newStatus = TaskStatus.DONE;
+    }
 
     // Create progress history entry
     await prisma.taskHistory.create({
         data: {
             taskId: options.taskId,
-            status: reachedTarget ? TaskStatus.DONE : latest.status,
+            status: newStatus,
             endTime: latest.endTime,
             changedBy: options.userId,
             changeReason: ChangeReason.PROGRESS_UPDATE,
@@ -210,7 +226,7 @@ export async function addProgress(options: AddProgressRequest): Promise<AddProgr
 
     // If target reached and status wasn't already DONE, create a status change entry
     let statusChanged = false;
-    if (reachedTarget && latest.status !== TaskStatus.DONE) {
+    if (latest.status !== newStatus) {
         statusChanged = true;
     }
 
@@ -221,6 +237,7 @@ export async function addProgress(options: AddProgressRequest): Promise<AddProgr
         statusChanged,
     };
 }
+
 
 // Get progress history for a task
 
