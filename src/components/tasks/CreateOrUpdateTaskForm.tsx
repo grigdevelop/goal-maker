@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { TaskType, ScheduleType } from "@/lib/constants/task";
+import { DatePicker } from '@/components/ui/date-picker';
 import type { TaskType as TaskTypeType } from "@/lib/constants/task";
 import {
     ScheduleConfigFields,
@@ -36,7 +37,7 @@ type Props = {
 };
 
 export function CreateOrUpdateTaskForm({ task, onSubmit, onClose }: Props) {
-    const { register, handleSubmit, watch, formState: { errors } } = useForm<TaskFormValues>({
+    const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<TaskFormValues>({
         defaultValues: {
             title: task?.title || '',
             description: task?.description || '',
@@ -56,6 +57,7 @@ export function CreateOrUpdateTaskForm({ task, onSubmit, onClose }: Props) {
     const [scheduleError, setScheduleError] = useState<string | null>(null);
 
     const selectedType = watch('type');
+    const endTimeValue = watch('endTime');
     const showDeadline = selectedType !== TaskType.CUSTOM;
     const showSchedule = selectedType === TaskType.REPEATABLE || selectedType === TaskType.CUSTOM;
 
@@ -127,10 +129,10 @@ export function CreateOrUpdateTaskForm({ task, onSubmit, onClose }: Props) {
             {showDeadline && (
                 <fieldset className="fieldset">
                     <label className="label">Deadline</label>
-                    <input
-                        type="date"
-                        className="input input-sm w-full"
-                        {...register('endTime')}
+                    <DatePicker
+                        value={endTimeValue || undefined}
+                        onChange={(val) => setValue('endTime', val)}
+                        placeholder="Set deadline (optional)"
                     />
                 </fieldset>
             )}

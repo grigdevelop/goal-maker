@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from 'react';
 import { ScheduleType } from '@/lib/constants/task';
+import { DatePicker } from '@/components/ui/date-picker';
 import type { ScheduleType as ScheduleTypeType, ScheduleConfig, DailyConfig, WeeklyConfig, MonthlyConfig, CustomConfig } from '@/lib/constants/task';
 
 const SCHEDULE_TYPE_LABEL: Record<string, string> = {
@@ -205,14 +206,15 @@ export function ScheduleConfigFields({ value, onChange, showScheduleTypeSelector
             {value.scheduleType === ScheduleType.CUSTOM && (
                 <fieldset className="fieldset">
                     <label className="label">Specific Dates <span className="text-error">*</span></label>
-                    <div className="flex gap-2">
-                        <input
-                            type="date"
-                            className="input input-sm flex-1"
-                            value={dateInput}
-                            onChange={(e) => setDateInput(e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
-                        />
+                    <div className="flex gap-2 items-center">
+                        <div className="flex-1">
+                            <DatePicker
+                                value={dateInput || undefined}
+                                onChange={(val) => setDateInput(val)}
+                                min={new Date().toISOString().split('T')[0]}
+                                placeholder="Select a date"
+                            />
+                        </div>
                         <button
                             type="button"
                             className="btn btn-sm btn-primary"
