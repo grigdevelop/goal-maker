@@ -71,3 +71,64 @@ resizeImage(data: Buffer, width: number, height: number): Promise<Buffer>
 - Full upload → retrieve → delete lifecycle
 - Verify resized image dimensions match requested size
 - Verify original image preserved after resize request
+
+Implement user profile image functionality using the image upload feature:
+
+## Components to Create
+
+### src/components/images/
+1. **ImageUploader** - Reusable image upload component
+   - Drag-and-drop support
+   - File input fallback
+   - Preview before upload
+   - Progress indicator during upload
+   - Validation feedback (file type, size limits)
+
+2. **ImagePreview** - Display uploaded image with actions
+   - Shows image with loading state
+   - Delete button overlay on hover
+   - Fallback for broken images
+
+### src/components/user-profile/
+1. **ProfileImageUploader** - User avatar upload component
+   - Circular crop/preview for avatar
+   - "Change Photo" and "Remove Photo" buttons
+   - Uses ImageUploader internally
+   - Optimistic UI updates
+
+2. **UserProfileCard** - Displays user info with avatar
+   - Profile image (or default avatar)
+   - User name and email
+   - Edit profile link
+
+## API Routes
+
+### POST `/api/user/profile-image`
+- Upload and associate image with authenticated user
+- Update user record with image reference
+- Return updated user profile
+
+### DELETE `/api/user/profile-image`
+- Remove image association from user
+- Delete image from storage
+- Return updated user profile
+
+## Pages
+
+### src/app/(dashboard)/user-profile/page.tsx
+- Display UserProfileCard
+- ProfileImageUploader for changing avatar
+- User details form (name, email, etc.)
+- Success/error toast notifications
+
+## Component Updates
+
+### UserMenu Component
+- Fetch user profile image from session/context
+- Display user's uploaded image if exists
+- Fall back to default avatar (initials or placeholder icon)
+- Add "View Profile" link to user profile page
+
+## State Management
+- Update user context/session after image upload/delete
+- Invalidate relevant queries (React Query/SWR) on image change

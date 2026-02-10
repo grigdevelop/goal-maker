@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useSyncExternalStore } from 'react';
-import Image from 'next/image';
+import Link from 'next/link';
 import type { User } from 'better-auth';
 import { signOutAction } from '@/lib/actions/auth';
 
@@ -47,12 +47,19 @@ export function UserMenu({ user }: Props) {
     return (
         <div className="dropdown dropdown-end">
             <div tabIndex={0} role="button" className="btn btn-ghost btn-circle avatar">
-                <div className="w-10 rounded-full">
-                    <Image
-                        alt="User avatar"
-                        src="https://img.daisyui.com/images/stock/photo-1534528741775-53994a69daeb.webp"
-                        width={40}
-                        height={40} />
+                <div className="w-10 rounded-full overflow-hidden">
+                    {user.image ? (
+                        /* eslint-disable-next-line @next/next/no-img-element */
+                        <img
+                            alt="User avatar"
+                            src={user.image}
+                            className="w-full h-full object-cover"
+                        />
+                    ) : (
+                        <div className="w-full h-full bg-primary text-primary-content flex items-center justify-center text-sm font-bold">
+                            {(user.name || user.email).charAt(0).toUpperCase()}
+                        </div>
+                    )}
                 </div>
             </div>
             <ul
@@ -62,10 +69,9 @@ export function UserMenu({ user }: Props) {
                     <span>{user.name || user.email}</span>
                 </li>
                 <li>
-                    <a className="justify-between">
+                    <Link href="/user-profile" className="justify-between">
                         Profile
-                        <span className="badge">New</span>
-                    </a>
+                    </Link>
                 </li>
                 <li>
                     <button onClick={toggleTheme} className="justify-between">
