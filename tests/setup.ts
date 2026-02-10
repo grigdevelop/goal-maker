@@ -27,6 +27,8 @@ beforeAll(async () => {
 
 beforeEach(async () => {
     // Clean tables in correct order (dependent tables first)
+    await testPrisma.$executeRawUnsafe('DELETE FROM "image_cache"');
+    await testPrisma.$executeRawUnsafe('DELETE FROM "image"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "task_history"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "task_schedule"');
     await testPrisma.$executeRawUnsafe('DELETE FROM "goal_skill"');

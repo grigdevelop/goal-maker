@@ -195,3 +195,30 @@ model SkillTask {
   @@index([taskId])
   @@map("skill_task")
 }
+
+model Image {
+  id        String       @id @default(uuid())
+  filename  String
+  mimetype  String
+  size      Int
+  data      Bytes
+  createdAt DateTime     @default(now())
+  updatedAt DateTime     @default(now())
+  cache     ImageCache[]
+
+  @@map("image")
+}
+
+model ImageCache {
+  id       String @id @default(uuid())
+  imageId  String
+  image    Image  @relation(fields: [imageId], references: [id], onDelete: Cascade)
+  width    Int
+  height   Int
+  mimetype String
+  data     Bytes
+
+  @@unique([imageId, width, height])
+  @@index([imageId])
+  @@map("image_cache")
+}
