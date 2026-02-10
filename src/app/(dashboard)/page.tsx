@@ -1,11 +1,13 @@
-import { WelcomeHero, WelcomeActions } from "@/components/welcome";
+import { WelcomeHero } from "@/components/welcome";
+import { RecommendationsDashboard } from "@/components/recommendations";
 
 
 export default function Home() {
   return (
     <div>
       <WelcomeHero />
-      <WelcomeActions />
+      <br />
+      <RecommendationsDashboard />
     </div>
   );
 }
